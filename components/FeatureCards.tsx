@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { CpuArchitecture } from "./CpuArchitecture";
 
 export default function FeatureCards() {
   return (
@@ -17,16 +18,16 @@ export default function FeatureCards() {
             <div className="relative w-full h-56 mb-2 rounded-2xl overflow-hidden">
               <Image
                 src="/cards1.png"
-                alt="Intelligent Tracking Visualized"
+                alt="Unified Financial Dashboard"
                 fill
                 className="object-contain"
                 sizes="(max-width: 768px) 100vw, 33vw"
               />
             </div>
             <div>
-              <h3 className="font-semibold text-xl text-ink mb-2">Intelligent Tracking</h3>
+              <h3 className="font-semibold text-xl text-ink mb-2">Unified Financial Dashboard</h3>
               <p className="text-ink-soft text-[16px] leading-relaxed">
-                Auto-categorize transactions and spot hidden subscriptions instantly.
+                Everything you need to manage your finances in one place.
               </p>
             </div>
           </div>
@@ -34,24 +35,29 @@ export default function FeatureCards() {
             <div className="relative w-full h-56 mb-2 rounded-2xl overflow-hidden">
               <Image
                 src="/Cards2.png"
-                alt="Goal Forecasting Visualized"
+                alt="Personalized Financial Planning"
                 fill
                 className="object-contain"
                 sizes="(max-width: 768px) 100vw, 33vw"
               />
             </div>
             <div>
-              <h3 className="font-semibold text-xl text-ink mb-2">Goal Forecasting</h3>
+              <h3 className="font-semibold text-xl text-ink mb-2">Personalized Financial Planning</h3>
               <p className="text-ink-soft text-[16px] leading-relaxed">
-                Visualize your financial future and set realistic savings targets.
+                AI-crafted strategies tailored to your financial goals.
               </p>
             </div>
           </div>
-          <div className="md:col-span-2 flex flex-col p-8 rounded-3xl bg-white shadow-sm border border-black/5 hover:-translate-y-1 hover:shadow-md transition-all duration-300 min-h-[300px]">
-            <h3 className="font-semibold text-xl text-ink mb-3">AI Insights</h3>
-            <p className="text-ink-soft text-[16px] leading-relaxed">
-              Get personalized alerts and recommendations on how to save more.
-            </p>
+          <div className="md:col-span-2 flex flex-col p-8 rounded-3xl bg-white shadow-sm border border-black/5 hover:-translate-y-1 hover:shadow-md transition-all duration-300 min-h-[380px] overflow-hidden justify-between">
+            <div className="relative w-full h-56 mb-2 rounded-2xl overflow-hidden flex items-center justify-center bg-transparent">
+              <CpuArchitecture className="w-full h-full text-zinc-300" imageUrl="/cards3.png" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-xl text-ink mb-2">Explainable AI Insights</h3>
+              <p className="text-ink-soft text-[16px] leading-relaxed">
+                Every recommendation comes with a clear explanation.
+              </p>
+            </div>
           </div>
           
           {/* Row 2 (2 cards) */}
