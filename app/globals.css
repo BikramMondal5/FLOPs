@@ -119,10 +119,10 @@ body {
 }
 
 .btn-secondary {
-  border: 1.5px solid #E29DAA;
-  background-color: #E29DAA;
+  border: 3px dotted #D46A96;
+  background-color: #F6B7CF;
   color: var(--ink);
-  box-shadow: 0 4px 16px rgba(226, 157, 170, 0.4);
+  box-shadow: 0 4px 16px rgba(246, 183, 207, 0.4);
   border-radius: 999px;
   font-weight: 600;
   transition: all 300ms ease;
@@ -137,7 +137,7 @@ body {
 }
 
 .btn-secondary:hover {
-  box-shadow: 0 8px 24px rgba(226, 157, 170, 0.6);
+  box-shadow: 0 8px 24px rgba(246, 183, 207, 0.6);
   transform: translateY(-2px);
 }
 

@@ -4,14 +4,72 @@ import { DottedMapCard } from "./DottedMapCard";
 
 export default function FeatureCards() {
   return (
-    <section className="w-full relative z-10 py-16 px-6 xl:px-0 mx-auto" style={{ maxWidth: "1200px" }}>
-      <div className="flex flex-col mb-12">
-        <div className="flex flex-col lg:flex-row lg:items-baseline gap-2 lg:gap-4 mb-8">
-          <h2 className="text-3xl md:text-4xl font-serif text-ink m-0">Explore Features</h2>
-          <p className="text-lg md:text-xl text-ink-soft m-0">
-            Smarter budgets and AI-powered recommendations.
-          </p>
+    <section className="w-full relative z-10 pt-10 pb-16 px-6 xl:px-0 mx-auto" style={{ maxWidth: "1200px" }}>
+      <div className="flex flex-col items-center text-center">
+        {/* Tag / Pill Badge */}
+        <div
+          className="inline-flex items-center rounded-full border border-[#F6B7CF] bg-[#FFF4F8] text-[#D46A96]"
+          style={{
+            fontFamily: "var(--font-body)",
+            height: "40px",
+            padding: "10px 18px",
+            fontSize: "12px",
+            fontWeight: 600,
+            lineHeight: "16px",
+            gap: "8px",
+            marginBottom: "20px",
+          }}
+        >
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="flex-shrink-0"
+          >
+            <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275Z" />
+          </svg>
+          <span>AI-Powered Financial Intelligence</span>
         </div>
+
+        {/* Heading */}
+        <h2
+          className="font-normal m-0 animate-fade-in"
+          style={{
+            fontFamily: "var(--font-heading)",
+            fontSize: "60px",
+            fontWeight: 400,
+            lineHeight: "60px",
+            letterSpacing: "-0.03em",
+            color: "#18181B",
+            marginBottom: "24px",
+          }}
+        >
+          Key Features
+        </h2>
+
+        {/* Sub-heading */}
+        <p
+          className="font-normal mx-auto m-0"
+          style={{
+            fontFamily: "var(--font-body)",
+            fontSize: "18px",
+            fontWeight: 400,
+            lineHeight: "28px",
+            letterSpacing: "-0.01em",
+            color: "#6B7280",
+            maxWidth: "680px",
+            marginTop: "0px",
+            marginBottom: "56px",
+          }}
+        >
+          Discover the intelligent tools that help you track spending, plan smarter, protect your data, and make confident financial decisions—all from one unified platform.
+        </p>
+      </div>
 
         <div className="grid grid-cols-1 md:grid-cols-6 gap-6 w-full">
           {/* Row 1 (3 cards) */}
@@ -93,7 +151,6 @@ export default function FeatureCards() {
             </div>
           </div>
         </div>
-      </div>
     </section>
   );
 }

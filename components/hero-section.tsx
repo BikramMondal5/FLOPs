@@ -229,10 +229,10 @@ export default function HeroSection() {
               fontFamily: "var(--font-body)",
               fontSize: "16px",
               color: "var(--ink)",
-              backgroundColor: "#E29DAA",
-              border: "1.5px solid #E29DAA",
-              padding: "14.5px 32px",
-              boxShadow: "0 4px 16px rgba(226, 157, 170, 0.4)",
+              backgroundColor: "#F6B7CF",
+              border: "3px dotted #D46A96",
+              padding: "14px 32px",
+              boxShadow: "0 4px 16px rgba(246, 183, 207, 0.4)",
             }}
           >
             Explore Features
@@ -256,7 +256,7 @@ export default function HeroSection() {
 
       {/* Trusted By */}
       <div
-        className="relative z-10 mx-auto w-full mt-auto px-6 pb-12 xl:px-0 lg:pb-16"
+        className="relative z-10 mx-auto w-full mt-auto px-6 pb-4 xl:px-0 lg:pb-6"
         style={{ maxWidth: "1200px" }}
       >
         <p
