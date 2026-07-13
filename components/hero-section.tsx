@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+// import DigitalBadgesSection from "./DigitalBadgesSection";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -9,8 +10,6 @@ const navLinks = [
   { href: "/security", label: "Security" },
   { href: "/dashboard", label: "Dashboard" },
 ];
-
-const companies = ["TCS", "Infosys", "Wipro", "Accenture", "Cognizant"];
 
 export default function HeroSection() {
   return (
@@ -43,22 +42,14 @@ export default function HeroSection() {
         style={{ maxWidth: "1200px", height: "72px" }}
       >
         <Link href="/" className="flex items-center gap-2 no-underline z-10 relative">
-          <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
-            <path
-              d="M8 28 L16 4 L24 28"
-              stroke="var(--ink)"
-              strokeWidth="2.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              fill="none"
-            />
-            <path
-              d="M11 20 L21 20"
-              stroke="var(--ink)"
-              strokeWidth="2.4"
-              strokeLinecap="round"
-            />
-          </svg>
+          <Image
+            src="/logo.png"
+            alt="FLOPs logo"
+            width={32}
+            height={32}
+            className="h-8 w-8 rounded-full object-contain"
+            priority
+          />
           <span
             className="font-medium"
             style={{
@@ -138,11 +129,11 @@ export default function HeroSection() {
 
       {/* Hero Content */}
       <section
-        className="relative z-10 mx-auto flex w-full flex-col items-center text-center animate-hero px-6 xl:px-0 flex-1 justify-center"
+        className="relative z-10 mx-auto flex w-full flex-col items-center text-center animate-hero px-6 xl:px-0 flex-1 justify-start"
         style={{
           maxWidth: "1200px",
-          paddingTop: "12vh",
-          paddingBottom: "12vh",
+          paddingTop: "10vh",
+          paddingBottom: "14vh",
         }}
       >
         {/* Pill badge */}
@@ -254,43 +245,10 @@ export default function HeroSection() {
         </div>
       </section>
 
-      {/* Trusted By */}
-      <div
-        className="relative z-10 mx-auto w-full mt-auto px-6 pb-4 xl:px-0 lg:pb-6"
-        style={{ maxWidth: "1200px" }}
-      >
-        <p
-          className="text-center"
-          style={{
-            fontFamily: "var(--font-body)",
-            fontSize: "13px",
-            fontWeight: 500,
-            color: "rgba(255,255,255,0.7)",
-            letterSpacing: "0.02em",
-            marginBottom: "20px",
-          }}
-        >
-          Trusted by students placed at
-        </p>
-        <div className="social-strip-mask flex items-center justify-center gap-12 md:gap-16 flex-wrap">
-          {companies.map((name) => (
-            <span
-              key={name}
-              style={{
-                fontFamily: "var(--font-body)",
-                fontSize: "20px",
-                fontWeight: 600,
-                color: "rgba(255,255,255,0.7)",
-                letterSpacing: "0.04em",
-                lineHeight: "24px",
-                userSelect: "none",
-              }}
-            >
-              {name}
-            </span>
-          ))}
-        </div>
-      </div>
+      {/* Trusted By / Digital Badges Section
+      <div className="w-full mt-auto">
+        <DigitalBadgesSection />
+      </div> */}
     </div>
   );
 }
