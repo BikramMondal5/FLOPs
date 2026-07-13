@@ -40,7 +40,7 @@ export default function AgentEconomySection() {
       ref={containerRef}
       className="w-full py-20 px-6 sm:px-8 relative overflow-hidden"
       style={{
-        backgroundColor: "#FFFFFF",
+        backgroundColor: "var(--bg-tint)",
         backgroundImage: `
           linear-gradient(to right, rgba(246, 183, 207, 0.08) 1px, transparent 1px),
           linear-gradient(to bottom, rgba(246, 183, 207, 0.08) 1px, transparent 1px)
@@ -346,49 +346,7 @@ export default function AgentEconomySection() {
           </div>
         </div>
 
-        {/* Animated 4-step Timeline workflow */}
-        <div className="mt-16 border-t border-[#F6B7CF]/18 pt-10 relative max-w-[1000px] mx-auto">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6 relative">
-            
-            {/* Horizontal line background connecting steps */}
-            <div className="hidden md:block absolute left-6 right-6 top-[21px] h-[1px] border-t border-dashed border-[#F6B7CF]/40 z-0" />
-            
-            {/* Step 1 */}
-            <div className="flex items-center gap-3 bg-white border border-[#F6B7CF]/18 px-4 py-2.5 rounded-full shadow-sm z-10 transition-all duration-300">
-              <div className={`w-[26px] h-[26px] rounded-full flex items-center justify-center text-xs font-semibold ${activeStep === 0 ? "bg-[#D46A96] text-white animate-pulse" : "bg-[#FFF4F8] text-[#D46A96]"}`}>
-                ①
-              </div>
-              <span className="text-xs font-medium text-zinc-700">Connect Accounts</span>
-            </div>
-
-            {/* Step 2 */}
-            <div className="flex items-center gap-3 bg-white border border-[#F6B7CF]/18 px-4 py-2.5 rounded-full shadow-sm z-10 transition-all duration-300">
-              <div className={`w-[26px] h-[26px] rounded-full flex items-center justify-center text-xs font-semibold ${activeStep === 1 ? "bg-[#D46A96] text-white animate-pulse" : "bg-[#FFF4F8] text-[#D46A96]"}`}>
-                ②
-              </div>
-              <span className="text-xs font-medium text-zinc-700">AI Analyzes Data</span>
-            </div>
-
-            {/* Step 3 */}
-            <div className="flex items-center gap-3 bg-white border border-[#F6B7CF]/18 px-4 py-2.5 rounded-full shadow-sm z-10 transition-all duration-300">
-              <div className={`w-[26px] h-[26px] rounded-full flex items-center justify-center text-xs font-semibold ${activeStep === 2 ? "bg-[#D46A96] text-white animate-pulse" : "bg-[#FFF4F8] text-[#D46A96]"}`}>
-                ③
-              </div>
-              <span className="text-xs font-medium text-zinc-700">Personalized Insights</span>
-            </div>
-
-            {/* Step 4 */}
-            <div className="flex items-center gap-3 bg-white border border-[#F6B7CF]/18 px-4 py-2.5 rounded-full shadow-sm z-10 transition-all duration-300">
-              <div className={`w-[26px] h-[26px] rounded-full flex items-center justify-center text-xs font-semibold ${activeStep === 3 ? "bg-[#D46A96] text-white animate-pulse" : "bg-[#FFF4F8] text-[#D46A96]"}`}>
-                ④
-              </div>
-              <span className="text-xs font-medium text-zinc-700">Achieve Financial Goals</span>
-            </div>
-
-          </div>
         </div>
-
-      </div>
 
       <style jsx global>{`
         @keyframes popup-reveal {
