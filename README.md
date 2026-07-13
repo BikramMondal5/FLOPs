@@ -12,6 +12,7 @@
     <a href="https://react.dev/">
       <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React"/>
     </a>
+    </br>
     <a href="https://tailwindcss.com/">
       <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS"/>
     </a>
@@ -22,17 +23,12 @@
   <img src="public/hero-section.png" alt="FLOPs Logo" width="100%" height="350"/>
 
   <p>
-    AI-powered personal finance platform for smarter budgeting, financial planning, and intelligent money management.<br />
+    FLOPs (Financial Lifestyle Optimization Suite) is an AI-powered personal finance platform that simplifies money management with intelligent budgeting, financial planning, explainable AI insights, and secure financial analytics. It transforms your financial data into personalized, actionable recommendations through a modern, intuitive dashboard.<br />
   </p>
 
 </div>
 
-## 🌟 Overview
-
-**FLOPs (Financial Lifestyle Optimization Suite)** is an AI-powered personal finance platform designed to simplify money management through intelligent budgeting, financial planning, explainable AI insights, and secure financial analytics.
-
-Whether you're tracking expenses, setting savings goals, or planning your financial future, FLOPs transforms complex financial data into personalized, actionable recommendations—all within a modern and intuitive dashboard.
-
+---
 # 🌟 Features
 
 - 💰 **Unified Financial Dashboard** – View your spending, savings, investments, and financial goals from one centralized dashboard.
