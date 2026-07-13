@@ -1,11 +1,6 @@
 # FLOPs – Financial Lifestyle Optimization Suite
 
 <div align="center">
-  <img src="public/hero-section.png" alt="FLOPs Logo" width="100%" height="250"/>
-
-  <p>
-    AI-powered personal finance platform for smarter budgeting, financial planning, and intelligent money management.<br />
-  </p>
 
   <p>
     <a href="https://opensource.org/licenses/MIT">
@@ -23,6 +18,11 @@
     <a href="https://www.typescriptlang.org/">
       <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript"/>
     </a>
+  </p>
+  <img src="public/hero-section.png" alt="FLOPs Logo" width="100%" height="350"/>
+
+  <p>
+    AI-powered personal finance platform for smarter budgeting, financial planning, and intelligent money management.<br />
   </p>
 
 </div>
