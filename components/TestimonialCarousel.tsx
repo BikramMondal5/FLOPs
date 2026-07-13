@@ -137,10 +137,13 @@ export default function TestimonialCarousel() {
   const [customImage, setCustomImage] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: "",
-    relationship: "",
-    role: "",
+    occupation: "",
+    primaryUse: "",
+    frequency: "",
     feedback: "",
     rating: 5,
+    favoriteFeature: "",
+    allowPublic: false,
     avatar: null as string | null,
   });
 
@@ -179,7 +182,7 @@ export default function TestimonialCarousel() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-
+      
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -190,9 +193,19 @@ export default function TestimonialCarousel() {
         if (data.success) {
           setStatusMessage({
             type: "success",
-            message: "Thank you for sharing your experience!",
+            message: "Thank you! Your feedback helps us build a smarter financial experience for everyone.",
           });
-          setFormData({ name: "", relationship: "", role: "", feedback: "", rating: 5, avatar: null });
+          setFormData({
+            name: "",
+            occupation: "",
+            primaryUse: "",
+            frequency: "",
+            feedback: "",
+            rating: 5,
+            favoriteFeature: "",
+            allowPublic: false,
+            avatar: null,
+          });
           setSelectedAvatar(null);
           setCustomImage(null);
 
@@ -220,18 +233,20 @@ export default function TestimonialCarousel() {
       // Fallback add on client side for demo
       const newTestimonial = {
         name: formData.name || "Anonymous",
-        country: formData.relationship || "Colleague",
-        type: formData.role === "Student" ? "Student" : "Peer",
-        avatar: formData.avatar || "https://i.pravatar.cc/150?img=8",
+        country: formData.occupation || "User",
+        type: formData.primaryUse || "Feedback",
+        avatar: formData.avatar || `https://i.pravatar.cc/150?img=${Math.floor(Math.random() * 12 + 1)}`,
         feedback: formData.feedback,
         rating: formData.rating,
       };
-      setTestimonials((prev) => [newTestimonial, ...prev]);
-      setStatusMessage({ type: "success", message: "Added successfully to local view!" });
+      if (formData.allowPublic) {
+        setTestimonials((prev) => [newTestimonial, ...prev]);
+      }
+      setStatusMessage({ type: "success", message: "Thank you! Your feedback helps us build a smarter financial experience for everyone." });
       setTimeout(() => {
         setIsModalOpen(false);
         setStatusMessage(null);
-      }, 1500);
+      }, 2000);
     } finally {
       setIsSubmitting(false);
     }
@@ -349,21 +364,22 @@ export default function TestimonialCarousel() {
 
             <div className="flex flex-col gap-1 mb-6 pr-6">
               <h3 className="text-2xl font-bold text-zinc-900 flex items-center gap-2">
-                <MessageSquare className="w-6 h-6 text-[#D46A96]" />
-                Share Your Experience
+                <ShieldCheck className="w-6 h-6 text-[#D46A96]" />
+                Share Your FLOPs Experience
               </h3>
               <p className="text-zinc-500 text-sm">
-                I'd love to hear about your experience working with me. Your feedback helps me grow.
+                Tell us how FLOPs helped you manage your finances. Your feedback helps us improve the platform and deliver a better financial experience.
               </p>
             </div>
 
             <div className="overflow-y-auto flex-1 pr-1 space-y-4">
               {statusMessage && (
                 <div
-                  className={`p-4 rounded-xl border ${statusMessage.type === "success"
+                  className={`p-4 rounded-xl border ${
+                    statusMessage.type === "success"
                       ? "bg-[#FFF4F8] border-[#F6B7CF] text-[#D46A96]"
                       : "bg-red-50 border-red-200 text-red-600"
-                    } flex items-center gap-3`}
+                  } flex items-center gap-3`}
                 >
                   <p className="font-medium text-sm">{statusMessage.message}</p>
                 </div>
@@ -373,7 +389,7 @@ export default function TestimonialCarousel() {
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="space-y-2">
                     <label className="text-sm font-semibold text-zinc-700">
-                      Rating <span className="text-[#D46A96]">*</span>
+                      Overall Experience <span className="text-[#D46A96]">*</span>
                     </label>
                     <div className="flex gap-2">
                       {[1, 2, 3, 4, 5].map((star) => (
@@ -384,10 +400,11 @@ export default function TestimonialCarousel() {
                           className="transition-transform hover:scale-110"
                         >
                           <Star
-                            className={`h-8 w-8 cursor-pointer ${star <= formData.rating
+                            className={`h-8 w-8 cursor-pointer ${
+                              star <= formData.rating
                                 ? "fill-[#F6B7CF] text-[#F6B7CF]"
                                 : "fill-none text-zinc-300 hover:text-zinc-400"
-                              }`}
+                            }`}
                           />
                         </button>
                       ))}
@@ -461,8 +478,9 @@ export default function TestimonialCarousel() {
                                 setSelectedAvatar(avatar);
                                 setFormData({ ...formData, avatar });
                               }}
-                              className={`w-10 h-10 rounded-xl overflow-hidden border-2 transition-all hover:scale-110 ${selectedAvatar === avatar ? "border-[#F6B7CF] ring-2 ring-[#F6B7CF]/20" : "border-zinc-200 hover:border-zinc-300"
-                                }`}
+                              className={`w-10 h-10 rounded-xl overflow-hidden border-2 transition-all hover:scale-110 ${
+                                selectedAvatar === avatar ? "border-[#F6B7CF] ring-2 ring-[#F6B7CF]/20" : "border-zinc-200 hover:border-zinc-300"
+                              }`}
                             >
                               <img src={avatar} alt={`Avatar ${index + 1}`} className="w-full h-full object-cover" />
                             </button>
@@ -479,49 +497,104 @@ export default function TestimonialCarousel() {
                     <input
                       id="name"
                       type="text"
-                      placeholder="John Doe"
+                      placeholder="Enter your full name"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       required
                       className="w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-xl text-zinc-800 placeholder:text-zinc-400 focus:outline-none focus:border-[#F6B7CF] text-sm"
                     />
                   </div>
+
                   <div className="space-y-1">
-                    <label htmlFor="relationship" className="text-xs font-semibold text-zinc-700">
-                      Your Relationship <span className="text-[#D46A96]">*</span>
-                    </label>
-                    <input
-                      id="relationship"
-                      type="text"
-                      placeholder="Project Manager, HR, Friend, Senior, Project Teammate"
-                      value={formData.relationship}
-                      onChange={(e) => setFormData({ ...formData, relationship: e.target.value })}
-                      required
-                      className="w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-xl text-zinc-800 placeholder:text-zinc-400 focus:outline-none focus:border-[#F6B7CF] text-sm"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label htmlFor="role" className="text-xs font-semibold text-zinc-700">
-                      Your Role <span className="text-[#D46A96]">*</span>
+                    <label htmlFor="occupation" className="text-xs font-semibold text-zinc-700">
+                      Occupation <span className="text-[#D46A96]">*</span>
                     </label>
                     <select
-                      value={formData.role}
-                      onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                      id="occupation"
+                      value={formData.occupation}
+                      onChange={(e) => setFormData({ ...formData, occupation: e.target.value })}
                       required
                       className="w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-xl text-zinc-800 focus:outline-none focus:border-[#F6B7CF] text-sm"
                     >
-                      <option value="">Select your role</option>
+                      <option value="">Select your occupation</option>
                       <option value="Student">Student</option>
                       <option value="Working Professional">Working Professional</option>
+                      <option value="Freelancer">Freelancer</option>
+                      <option value="Business Owner">Business Owner</option>
+                      <option value="Content Creator">Content Creator</option>
+                      <option value="Retired">Retired</option>
+                      <option value="Other">Other</option>
                     </select>
                   </div>
+
+                  <div className="space-y-1">
+                    <label htmlFor="primaryUse" className="text-xs font-semibold text-zinc-700">
+                      Primary Use <span className="text-[#D46A96]">*</span>
+                    </label>
+                    <select
+                      id="primaryUse"
+                      value={formData.primaryUse}
+                      onChange={(e) => setFormData({ ...formData, primaryUse: e.target.value })}
+                      required
+                      className="w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-xl text-zinc-800 focus:outline-none focus:border-[#F6B7CF] text-sm"
+                    >
+                      <option value="">Select primary use case</option>
+                      <option value="Budget Planning">Budget Planning</option>
+                      <option value="Expense Tracking">Expense Tracking</option>
+                      <option value="Savings Goals">Savings Goals</option>
+                      <option value="AI Financial Insights">AI Financial Insights</option>
+                      <option value="Investment Tracking">Investment Tracking</option>
+                      <option value="Overall Financial Management">Overall Financial Management</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label htmlFor="frequency" className="text-xs font-semibold text-zinc-700">
+                      How often do you use FLOPs? <span className="text-[#D46A96]">*</span>
+                    </label>
+                    <select
+                      id="frequency"
+                      value={formData.frequency}
+                      onChange={(e) => setFormData({ ...formData, frequency: e.target.value })}
+                      required
+                      className="w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-xl text-zinc-800 focus:outline-none focus:border-[#F6B7CF] text-sm"
+                    >
+                      <option value="">Select frequency</option>
+                      <option value="Daily">Daily</option>
+                      <option value="Weekly">Weekly</option>
+                      <option value="Monthly">Monthly</option>
+                      <option value="Occasionally">Occasionally</option>
+                      <option value="This is my first time">This is my first time</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label htmlFor="favoriteFeature" className="text-xs font-semibold text-zinc-700">
+                      Favorite Feature <span className="text-zinc-400 font-normal">(Optional)</span>
+                    </label>
+                    <select
+                      id="favoriteFeature"
+                      value={formData.favoriteFeature}
+                      onChange={(e) => setFormData({ ...formData, favoriteFeature: e.target.value })}
+                      className="w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-xl text-zinc-800 focus:outline-none focus:border-[#F6B7CF] text-sm"
+                    >
+                      <option value="">Select a feature</option>
+                      <option value="Unified Dashboard">Unified Dashboard</option>
+                      <option value="AI Insights">AI Insights</option>
+                      <option value="Financial Planning">Financial Planning</option>
+                      <option value="Goal Tracking">Goal Tracking</option>
+                      <option value="Security">Security</option>
+                      <option value="Cross-device Experience">Cross-device Experience</option>
+                    </select>
+                  </div>
+
                   <div className="space-y-1">
                     <label htmlFor="feedback" className="text-xs font-semibold text-zinc-700">
-                      Your Feedback <span className="text-[#D46A96]">*</span>
+                      Share Your Experience <span className="text-[#D46A96]">*</span>
                     </label>
                     <textarea
                       id="feedback"
-                      placeholder="Share your experience working with me..."
+                      placeholder="Tell us what you liked, what could be improved, or how FLOPs has helped you manage your finances."
                       value={formData.feedback}
                       onChange={(e) => setFormData({ ...formData, feedback: e.target.value })}
                       required
@@ -530,12 +603,25 @@ export default function TestimonialCarousel() {
                     />
                   </div>
 
+                  <div className="flex items-center gap-2 py-1">
+                    <input
+                      id="allowPublic"
+                      type="checkbox"
+                      checked={formData.allowPublic}
+                      onChange={(e) => setFormData({ ...formData, allowPublic: e.target.checked })}
+                      className="w-4 h-4 rounded border-zinc-300 text-[#D46A96] focus:ring-[#F6B7CF]"
+                    />
+                    <label htmlFor="allowPublic" className="text-xs font-medium text-zinc-600 cursor-pointer">
+                      I agree to let FLOPs display my feedback publicly.
+                    </label>
+                  </div>
+
                   <button
                     type="submit"
                     disabled={isSubmitting}
                     className="w-full h-12 rounded-full bg-[#F6B7CF] text-[#18181B] hover:bg-[#F6B7CF]/90 font-semibold text-base flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                   >
-                    {isSubmitting ? "Submitting..." : "Submit Testimonial"}
+                    {isSubmitting ? "Submitting..." : "Submit Feedback"}
                   </button>
                 </form>
               )}
