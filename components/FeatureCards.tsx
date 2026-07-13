@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { CpuArchitecture } from "./CpuArchitecture";
+import { DottedMapCard } from "./DottedMapCard";
 
 export default function FeatureCards() {
   return (
@@ -17,9 +18,10 @@ export default function FeatureCards() {
           <div className="md:col-span-2 flex flex-col p-8 rounded-3xl bg-white shadow-sm border border-black/5 hover:-translate-y-1 hover:shadow-md transition-all duration-300 min-h-[380px] overflow-hidden justify-between">
             <div className="relative w-full h-56 mb-2 rounded-2xl overflow-hidden">
               <Image
-                src="/cards1.png"
+                src="/card1.png"
                 alt="Unified Financial Dashboard"
                 fill
+                priority={true}
                 className="object-contain"
                 sizes="(max-width: 768px) 100vw, 33vw"
               />
@@ -34,17 +36,17 @@ export default function FeatureCards() {
           <div className="md:col-span-2 flex flex-col p-8 rounded-3xl bg-white shadow-sm border border-black/5 hover:-translate-y-1 hover:shadow-md transition-all duration-300 min-h-[380px] overflow-hidden justify-between">
             <div className="relative w-full h-56 mb-2 rounded-2xl overflow-hidden">
               <Image
-                src="/Cards2.png"
-                alt="Personalized Financial Planning"
+                src="/Card2.png"
+                alt="Cross-Device Experience"
                 fill
                 className="object-contain"
                 sizes="(max-width: 768px) 100vw, 33vw"
               />
             </div>
             <div>
-              <h3 className="font-semibold text-xl text-ink mb-2">Personalized Financial Planning</h3>
+              <h3 className="font-semibold text-xl text-ink mb-2">Cross-Device Experience</h3>
               <p className="text-ink-soft text-[16px] leading-relaxed">
-                AI-crafted strategies tailored to your financial goals.
+                Access your financial dashboard seamlessly across every device.
               </p>
             </div>
           </div>
@@ -59,19 +61,36 @@ export default function FeatureCards() {
               </p>
             </div>
           </div>
-          
+
           {/* Row 2 (2 cards) */}
-          <div className="md:col-span-3 flex flex-col p-8 rounded-3xl bg-white shadow-sm border border-black/5 hover:-translate-y-1 hover:shadow-md transition-all duration-300 min-h-[300px]">
-            <h3 className="font-semibold text-xl text-ink mb-3">Bank-level Security</h3>
-            <p className="text-ink-soft text-[16px] leading-relaxed">
-              We use 256-bit encryption to keep your data safe and private.
-            </p>
+          <div className="md:col-span-3 flex flex-col p-8 rounded-3xl bg-white shadow-sm border border-black/5 hover:-translate-y-1 hover:shadow-md transition-all duration-300 min-h-[380px] overflow-hidden justify-between">
+            <div className="relative w-full h-64 mb-0 rounded-2xl overflow-hidden">
+              <Image
+                src="/card4.png"
+                alt="Secure by Default"
+                fill
+                priority={true}
+                className="object-contain"
+                sizes="(max-width: 768px) 100vw, 33vw"
+              />
+            </div>
+            <div>
+              <h3 className="font-semibold text-xl text-ink mb-2">Secure by Default</h3>
+              <p className="text-ink-soft text-[16px] leading-relaxed">
+                Bank-grade encryption keeps your financial data private.
+              </p>
+            </div>
           </div>
-          <div className="md:col-span-3 flex flex-col p-8 rounded-3xl bg-white shadow-sm border border-black/5 hover:-translate-y-1 hover:shadow-md transition-all duration-300 min-h-[300px]">
-            <h3 className="font-semibold text-xl text-ink mb-3">One Dashboard</h3>
-            <p className="text-ink-soft text-[16px] leading-relaxed">
-              Connect all your accounts to see your net worth in real-time.
-            </p>
+          <div className="md:col-span-3 flex flex-col p-8 rounded-3xl bg-white shadow-sm border border-black/5 hover:-translate-y-1 hover:shadow-md transition-all duration-300 min-h-[380px] overflow-hidden justify-between">
+            <div className="relative w-full h-56 mb-2 rounded-2xl overflow-hidden bg-transparent">
+              <DottedMapCard />
+            </div>
+            <div>
+              <h3 className="font-semibold text-xl text-ink mb-2">Connected Financial View</h3>
+              <p className="text-ink-soft text-[16px] leading-relaxed">
+                Bring all your accounts together in one unified dashboard.
+              </p>
+            </div>
           </div>
         </div>
       </div>
