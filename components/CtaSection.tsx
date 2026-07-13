@@ -212,7 +212,7 @@ export default function CtaSection() {
           <motion.div
             initial={{ opacity: 0, y: 22 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.9, cubicBezier: [0.22, 1, 0.36, 1], delay: 0.08 }}
+            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.08 }}
             className="inline-flex items-center gap-2 rounded-full border border-[#E88AB3]/25 px-4 py-1.5 backdrop-blur-[6px] text-[#b35e8c]"
             style={{
               fontFamily: "var(--font-body)",
@@ -235,7 +235,7 @@ export default function CtaSection() {
           <motion.h2
             initial={{ opacity: 0, y: 22 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.9, cubicBezier: [0.22, 1, 0.36, 1], delay: 0.22 }}
+            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.22 }}
             className="font-normal m-0 tracking-tight text-[#2a1622] leading-[1.05]"
             style={{
               fontFamily: "var(--font-heading)",
@@ -254,7 +254,7 @@ export default function CtaSection() {
           <motion.p
             initial={{ opacity: 0, y: 22 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.9, cubicBezier: [0.22, 1, 0.36, 1], delay: 0.36 }}
+            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.36 }}
             className="font-normal mx-auto mt-4 mb-0 text-[#6b5868]"
             style={{
               fontFamily: "var(--font-body)",
@@ -270,7 +270,7 @@ export default function CtaSection() {
           <motion.div
             initial={{ opacity: 0, y: 22 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.9, cubicBezier: [0.22, 1, 0.36, 1], delay: 0.5 }}
+            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.5 }}
             className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 mt-6"
           >
             <button
@@ -294,7 +294,7 @@ export default function CtaSection() {
           <motion.div
             initial={{ opacity: 0, y: 22 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.9, cubicBezier: [0.22, 1, 0.36, 1], delay: 0.78 }}
+            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.78 }}
             className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 mt-8"
             style={{ fontFamily: "var(--font-body)" }}
           >
