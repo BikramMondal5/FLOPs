@@ -28,7 +28,6 @@
 
 </div>
 
----
 # 🌟 Features
 
 - 💰 **Unified Financial Dashboard** – View your spending, savings, investments, and financial goals from one centralized dashboard.
