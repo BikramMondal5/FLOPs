@@ -2,17 +2,26 @@
 
 import { useState, useEffect } from "react";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
+import type { CategoryBreakdownItem } from "@/features/analytics/dto/dashboard.dto";
 
-const data = [
-  { name: "Bills", value: 12000, color: "#D46A96" },
-  { name: "Food", value: 8400, color: "#E88AB3" },
-  { name: "Shopping", value: 6200, color: "#F4B3C2" },
-  { name: "Travel", value: 3500, color: "#B19FFB" },
-  { name: "Entertainment", value: 2900, color: "#DFC5D0" },
-  { name: "Healthcare", value: 1800, color: "#9EABB3" },
+const PIE_COLORS = [
+  "#D46A96", // Primary Accent Pink
+  "#E88AB3",
+  "#F4B3C2",
+  "#B19FFB", // Purple accent
+  "#DFC5D0",
+  "#9EABB3",
+  "#F6B7CF",
+  "#C084FC",
+  "#818CF8",
 ];
 
-export default function BreakdownChart() {
+interface BreakdownChartProps {
+  categories: CategoryBreakdownItem[];
+  totalExpenses: number;
+}
+
+export default function BreakdownChart({ categories, totalExpenses }: BreakdownChartProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -27,6 +36,16 @@ export default function BreakdownChart() {
     );
   }
 
+  // Fallback if empty data is provided
+  const chartData = categories.length > 0 
+    ? categories.slice(0, 6).map((c, idx) => ({
+        name: c.category,
+        value: c.spent,
+        percentage: c.percentage,
+        color: PIE_COLORS[idx % PIE_COLORS.length],
+      }))
+    : [{ name: "No expenses", value: 1, percentage: 100, color: "#9EABB3" }];
+
   return (
     <div className="p-6 bg-white border border-[#F6B7CF]/15 rounded-[24px] shadow-[0_12px_40px_rgba(0,0,0,0.03)] flex flex-col justify-between relative overflow-hidden h-auto">
       <div className="mb-6">
@@ -40,7 +59,7 @@ export default function BreakdownChart() {
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
-                data={data}
+                data={chartData}
                 cx="50%"
                 cy="50%"
                 innerRadius={58}
@@ -48,7 +67,7 @@ export default function BreakdownChart() {
                 paddingAngle={4}
                 dataKey="value"
               >
-                {data.map((entry, index) => (
+                {chartData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}
               </Pie>
@@ -67,18 +86,21 @@ export default function BreakdownChart() {
           
           {/* Center Text inside Doughnut */}
           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-            <span className="text-[10px] uppercase font-bold text-[#6B7280]">Total</span>
-            <span className="text-lg font-extrabold text-[#18181B] mt-0.5">₹34,800</span>
+            <span className="text-[10px] uppercase font-bold text-[#6B7280]">Total Spent</span>
+            <span className="text-lg font-extrabold text-[#18181B] mt-0.5">₹{totalExpenses.toLocaleString("en-IN")}</span>
           </div>
         </div>
 
         {/* Legend */}
         <div className="flex flex-col gap-2.5 w-full">
-          {data.map((item) => (
+          {chartData.map((item) => (
             <div key={item.name} className="flex items-center text-xs">
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: item.color }} />
                 <span className="font-medium text-zinc-700">{item.name}</span>
+                {categories.length > 0 && (
+                  <span className="text-zinc-400 font-normal">({item.percentage.toFixed(1)}%)</span>
+                )}
               </div>
             </div>
           ))}

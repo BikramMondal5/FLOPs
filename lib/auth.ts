@@ -1,5 +1,6 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import Google from "next-auth/providers/google";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import bcrypt from "bcryptjs";
 import { authConfig } from "@/auth.config";
@@ -14,7 +15,7 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
   // MongoDB Adapter — persists accounts, sessions, verification_tokens
   // Only runs in Node.js runtime (API routes, server components)
   // ─────────────────────────────────────────────
-  adapter: MongoDBAdapter(clientPromise, {
+  adapter: MongoDBAdapter(clientPromise!, {
     databaseName: "flops",
     collections: {
       Users: "users",
@@ -79,9 +80,29 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
       },
     }),
 
-    // Future OAuth providers:
-    // GoogleProvider({ clientId: process.env.GOOGLE_CLIENT_ID!, clientSecret: process.env.GOOGLE_CLIENT_SECRET! }),
-    // GitHubProvider({ clientId: process.env.GITHUB_CLIENT_ID!, clientSecret: process.env.GITHUB_CLIENT_SECRET! }),
+    // ─────────────────────────────────────────────
+    // Google OAuth
+    // ─────────────────────────────────────────────
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      // Populate default profile fields for new Google sign-ups
+      profile(profile) {
+        return {
+          id: profile.sub,
+          name: profile.name,
+          email: profile.email,
+          image: profile.picture,
+          role: "user",
+          currency: "INR",
+          country: "India",
+          language: "English",
+          timezone: "Asia/Kolkata",
+        };
+      },
+      // Allow linking Google to an existing email/password account
+      allowDangerousEmailAccountLinking: true,
+    }),
   ],
 
   // ─────────────────────────────────────────────

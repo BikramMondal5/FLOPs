@@ -1,0 +1,19 @@
+{
+  "users": [
+    {
+      "name": "Copilot Test",
+      "email": "copilot.test+1@example.com",
+      "password": "$2b$12$NA6VycB1oHg0sMPCoy08F.q7dejIgFP3BivwZdWEat8yTk01QGKpm",
+      "image": null,
+      "role": "user",
+      "currency": "INR",
+      "country": "India",
+      "language": "English",
+      "timezone": "Asia/Kolkata",
+      "isVerified": false,
+      "createdAt": "2026-07-14T11:45:16.200Z",
+      "updatedAt": "2026-07-14T11:45:16.200Z",
+      "_id": "a9a05088-e021-4e64-b296-36cc8bdda465"
+    }
+  ]
+}

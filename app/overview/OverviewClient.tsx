@@ -1,0 +1,362 @@
+"use client";
+
+import { useState, useRef } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import {
+  Menu,
+  X,
+  Search,
+  Bell,
+  Wallet,
+  Receipt,
+  PiggyBank,
+  TrendingUp,
+  Heart,
+  ShieldCheck,
+  TrendingDown,
+} from "lucide-react";
+
+import Sidebar from "@/components/dashboard/Sidebar";
+import MetricCard from "@/components/dashboard/MetricCard";
+import SpendingChart from "@/components/dashboard/SpendingChart";
+import BreakdownChart from "@/components/dashboard/BreakdownChart";
+import RecentTransactions from "@/components/dashboard/RecentTransactions";
+import FinancialGoals from "@/components/dashboard/FinancialGoals";
+import QuickActions from "@/components/dashboard/QuickActions";
+import type { FinancialDashboardDTO } from "@/features/analytics/dto/dashboard.dto";
+
+const navLinks = [
+  { href: "/", label: "Home" },
+  { href: "/features", label: "Features" },
+  { href: "/how-it-works", label: "How It Works" },
+  { href: "/ai-insights", label: "AI Insights" },
+  { href: "/security", label: "Security" },
+  { href: "/dashboard", label: "Dashboard" },
+];
+
+interface OverviewClientProps {
+  initialData: FinancialDashboardDTO;
+  userName: string;
+}
+
+export default function OverviewClient({ initialData, userName }: OverviewClientProps) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [mouse, setMouse] = useState({ x: -9999, y: -9999, active: false });
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    setMouse({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+      active: true,
+    });
+  };
+
+  const handleMouseLeave = () => {
+    setMouse({ x: -9999, y: -9999, active: false });
+  };
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.08,
+      },
+    },
+  } as const;
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 15 },
+    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 120, damping: 14 } },
+  } as const;
+
+  const { summary, categories, monthlyTrends, recentTransactions, health, insights, accountDistribution } = initialData;
+
+  return (
+    <div
+      ref={containerRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      className="min-h-screen relative overflow-hidden flex flex-col"
+      style={{
+        backgroundColor: "#FCFCFD",
+        backgroundImage: `
+          linear-gradient(to right, rgba(246, 183, 207, 0.04) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(246, 183, 207, 0.04) 1px, transparent 1px)
+        `,
+        backgroundSize: "32px 32px",
+        // @ts-ignore
+        "--cx": `${mouse.x}px`,
+        // @ts-ignore
+        "--cy": `${mouse.y}px`,
+      }}
+    >
+      {/* Masked Glows */}
+      {mouse.active && (
+        <div
+          className="absolute inset-0 pointer-events-none z-[1] transition-opacity duration-300"
+          style={{
+            backgroundImage: `
+              linear-gradient(to right, rgba(246, 183, 207, 0.1) 1px, transparent 1px),
+              linear-gradient(to bottom, rgba(246, 183, 207, 0.1) 1px, transparent 1px)
+            `,
+            backgroundSize: "32px 32px",
+            WebkitMaskImage: "radial-gradient(circle 240px at var(--cx) var(--cy), #000 0%, #000 40%, transparent 100%)",
+            maskImage: "radial-gradient(circle 240px at var(--cx) var(--cy), #000 0%, #000 40%, transparent 100%)",
+          }}
+        />
+      )}
+
+      {/* Radial Backdrops */}
+      <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full pointer-events-none z-0 bg-radial from-[#F6B7CF]/10 to-transparent filter blur-[120px]" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[55vw] h-[55vw] rounded-full pointer-events-none z-0 bg-radial from-[#F9DCE7]/15 to-transparent filter blur-[140px]" />
+
+      {/* Top Navbar */}
+      <nav
+        className="sticky top-0 z-30 mx-auto flex w-full items-center justify-between px-6 md:px-8 border-b border-[#F6B7CF]/10 bg-[#FCFCFD]/80 backdrop-blur-md shrink-0"
+        style={{ height: "72px" }}
+      >
+        <Link href="/" className="flex items-center gap-2 no-underline z-10 relative">
+          <Image
+            src="/logo.png"
+            alt="FLOPs logo"
+            width={32}
+            height={32}
+            className="h-8 w-8 rounded-full object-contain"
+            priority
+          />
+          <span
+            className="font-medium text-[#18181B]"
+            style={{
+              fontFamily: "var(--font-body)",
+              fontSize: "18px",
+              letterSpacing: "-0.01em",
+            }}
+          >
+            FLOPs
+          </span>
+        </Link>
+
+        {/* Center Links */}
+        <div className="absolute inset-0 hidden md:flex items-center justify-center pointer-events-none">
+          <div className="flex items-center gap-8 pointer-events-auto">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="no-underline transition-opacity duration-150 text-[15px]"
+                style={{
+                  fontFamily: "var(--font-body)",
+                  color: "#18181B",
+                  opacity: 0.8,
+                }}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex items-center z-10 relative">
+          <Link
+            href="/accounts"
+            className="no-underline text-[15px] font-medium text-white"
+            style={{
+              fontFamily: "var(--font-body)",
+              background: "#18181B",
+              borderRadius: "999px",
+              padding: "10px 24px",
+              boxShadow: "0 2px 12px rgba(0,0,0,0.15)",
+            }}
+          >
+            My Accounts
+          </Link>
+        </div>
+      </nav>
+
+      {/* Main Grid Workspace */}
+      <div className="flex-1 flex flex-col lg:flex-row p-6 md:p-8 gap-6 md:gap-8 relative z-10">
+        
+        {/* Left Sidebar */}
+        <div className="hidden lg:block z-20 fixed left-6 md:left-8 top-[96px] w-[280px] h-[calc(100vh-128px)]">
+          <Sidebar />
+        </div>
+
+        {/* Mobile Drawers */}
+        {mobileMenuOpen && (
+          <div className="fixed inset-0 z-50 flex lg:hidden bg-black/10 backdrop-blur-sm">
+            <motion.div
+              initial={{ x: -280 }}
+              animate={{ x: 0 }}
+              exit={{ x: -280 }}
+              transition={{ type: "spring", damping: 25, stiffness: 220 }}
+              className="h-full w-[280px]"
+            >
+              <Sidebar onCloseMobile={() => setMobileMenuOpen(false)} />
+            </motion.div>
+            <div className="flex-1" onClick={() => setMobileMenuOpen(false)} />
+          </div>
+        )}
+
+        {/* Workspace Workspace */}
+        <div className="flex-1 flex flex-col gap-6 md:gap-8 z-10 lg:pl-[304px]">
+          {/* Header Panel */}
+          <header className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="lg:hidden w-10 h-10 bg-white border border-[#F6B7CF]/15 rounded-xl flex items-center justify-center text-[#18181B] shadow-sm hover:bg-[#FFF4F8] transition-colors"
+              >
+                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </button>
+
+              <div className="flex flex-col gap-1.5">
+                <span className="text-[15px] font-medium text-[#6B7280]">Good Morning, {userName} 👋</span>
+                <h1
+                  className="text-4xl md:text-5xl font-normal text-[#18181B] m-0 tracking-tight leading-none"
+                  style={{ fontFamily: "var(--font-heading)" }}
+                >
+                  Overview
+                </h1>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              {/* Notification icon */}
+              <button className="w-10 h-10 bg-white border border-[#F6B7CF]/15 rounded-full flex items-center justify-center text-[#18181B] shadow-sm hover:bg-[#FFF4F8] transition-colors relative">
+                <Bell className="w-4.5 h-4.5" />
+                <span className="absolute top-2 right-2.5 w-1.5 h-1.5 bg-[#D46A96] rounded-full" />
+              </button>
+            </div>
+          </header>
+
+          {/* Action Grid Content */}
+          <motion.main
+            variants={containerVariants}
+            initial="hidden"
+            animate="show"
+            className="flex flex-col gap-6 md:gap-8"
+          >
+            {/* KPI Cards */}
+            <motion.div variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+              <MetricCard
+                title="Net Worth"
+                value={summary.totalBalance}
+                trend="Synced Assets"
+                isPositive={true}
+                icon={Wallet}
+                sparklineData={initialData.cashFlow.sparkline}
+                prefix="₹"
+              />
+              <MetricCard
+                title="Monthly Spending"
+                value={summary.totalExpenses}
+                trend="This Month"
+                isPositive={false}
+                icon={Receipt}
+                sparklineData={initialData.cashFlow.sparkline}
+                prefix="₹"
+              />
+              <MetricCard
+                title="Savings Rate"
+                value={summary.savingsRate}
+                trend="Target: 20%"
+                isPositive={summary.savingsRate >= 20}
+                icon={PiggyBank}
+                sparklineData={[0, 10, summary.savingsRate]}
+                suffix="%"
+              />
+              <MetricCard
+                title="Daily Average"
+                value={summary.avgDailySpending}
+                trend="Burn Rate"
+                isPositive={true}
+                icon={TrendingUp}
+                sparklineData={initialData.cashFlow.sparkline}
+                prefix="₹"
+              />
+            </motion.div>
+
+            {/* Quick Actions Panel */}
+            <motion.div variants={itemVariants}>
+              <QuickActions />
+            </motion.div>
+
+            {/* Spending Chart */}
+            <motion.div variants={itemVariants} className="w-full">
+              <SpendingChart monthlyTrends={monthlyTrends} />
+            </motion.div>
+
+            {/* Recent Transaction Log */}
+            <motion.div variants={itemVariants} className="w-full">
+              <RecentTransactions transactions={recentTransactions} />
+            </motion.div>
+          </motion.main>
+        </div>
+
+        {/* Right Sticky Sidebar Panels */}
+        <div className="w-full lg:w-[360px] shrink-0 z-10 flex flex-col gap-6 md:gap-8">
+          
+          {/* Reusable Financial Health Score Display Widget */}
+          <div className="p-6 bg-white border border-[#F6B7CF]/15 rounded-[24px] shadow-[0_12px_40px_rgba(0,0,0,0.03)] flex flex-col relative overflow-hidden">
+            <div className="mb-4">
+              <h3 className="text-base font-semibold text-[#18181B] m-0">Financial Health Score</h3>
+              <p className="text-[11px] text-[#6B7280] mt-0.5 m-0">Engine Calculated Health index</p>
+            </div>
+
+            <div className="flex items-center gap-5 mt-2">
+              <div className="relative w-20 h-20 rounded-full border-4 border-[#FFF4F8] flex items-center justify-center bg-[#FFF4F8]/30">
+                <span className="text-2xl font-black text-[#D46A96]">{health.score}</span>
+              </div>
+              <div>
+                <span className="text-[11px] uppercase font-bold text-zinc-400">Score Rating</span>
+                <h4 className="text-base font-bold text-[#18181B] m-0">{health.rating}</h4>
+              </div>
+            </div>
+
+            <hr className="border-[#F6B7CF]/10 my-4" />
+
+            <div className="flex flex-col gap-3">
+              {health.healthInsights.map((insightText, idx) => (
+                <div key={idx} className="flex gap-2 items-start text-xs text-zinc-600">
+                  <ShieldCheck className="w-4 h-4 text-[#D46A96] shrink-0 mt-0.5" />
+                  <span>{insightText}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Rule Insights Widget */}
+          <div className="p-6 bg-white border border-[#F6B7CF]/15 rounded-[24px] shadow-[0_12px_40px_rgba(0,0,0,0.03)] flex flex-col">
+            <h3 className="text-base font-semibold text-[#18181B] mb-4">Rule-Based Insights</h3>
+            <div className="flex flex-col gap-3">
+              {insights.map((ins, idx) => (
+                <div
+                  key={idx}
+                  className={`p-3 rounded-xl border text-xs leading-relaxed ${
+                    ins.type === "positive"
+                      ? "bg-emerald-50 border-emerald-100 text-emerald-800"
+                      : ins.type === "warning"
+                      ? "bg-rose-50 border-rose-100 text-rose-800"
+                      : "bg-[#FFF4F8] border-[#F6B7CF]/10 text-zinc-700"
+                  }`}
+                >
+                  {ins.message}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <BreakdownChart categories={categories} totalExpenses={summary.totalExpenses} />
+          
+        </div>
+
+      </div>
+    </div>
+  );
+}
