@@ -22,8 +22,7 @@
       <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript"/>
     </a>
   </p>
-  <p> 
-      FLOPs (Financial Lifestyle Optimization Suite) is an AI-powered personal finance platform that simplifies money management with intelligent budgeting, financial planning, explainable AI insights, and secure financial analytics. It transforms your financial data into personalized, actionable recommendations through a modern, intuitive dashboard.
+  <p> FLOPs (Financial Lifestyle Optimization Suite) is an AI-powered personal finance platform that simplifies money management with intelligent budgeting,financial planning, explainable AI insights, and secure financial analytics. It transforms your financial data into personalized, actionable recommendations through a modern, intuitive dashboard.
   </p>
 
 </div>
