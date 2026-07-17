@@ -15,15 +15,19 @@ export function generateGoalRecommendations(
     return recs;
   }
 
-  if (health === "At Risk") {
-    recs.push(`At Risk: Increase monthly contributions by 15% to bridge the target gap.`);
+  if (health === "Started" && successProbability < 40) {
+    recs.push(`Just Started: Increase monthly contributions to ₹${requiredMonthlySavings.toLocaleString("en-IN")} to stay on track.`);
   }
 
   if (successProbability < 50) {
     recs.push(`Timeline constraint: Save an extra ₹${requiredMonthlySavings.toLocaleString("en-IN")} monthly to meet the deadline.`);
   }
 
-  if (recs.length === 0) {
+  if (health === "Almost There") {
+    recs.push(`Almost there! Just ₹${remainingAmount.toLocaleString("en-IN")} more to reach your ${goalName} goal.`);
+  }
+
+  if (recs.length === 0 && health === "On Track") {
     recs.push(`On track: Current savings rate is sufficient to complete ${goalName}.`);
   }
 

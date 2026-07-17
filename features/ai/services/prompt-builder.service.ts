@@ -106,7 +106,7 @@ ${context.budgets
 ${context.goals
   .map(
     (g) =>
-      `- ${g.name}: ₹${g.currentAmount.toLocaleString("en-IN")} / ₹${g.targetAmount.toLocaleString("en-IN")} (${g.progress.toFixed(1)}% complete, target: ${g.targetDate})`
+      `- ${g.title}: ₹${g.saved.toLocaleString("en-IN")} / ₹${g.targetAmount.toLocaleString("en-IN")} (${g.progress.toFixed(1)}% complete, ${g.etaMonths} months remaining, status: ${g.status})`
   )
   .join("\n")}`);
   } else {
@@ -157,7 +157,7 @@ export function generateSuggestedQuestions(context: FinancialContext): string[] 
 
   if (context.goals.length > 0) {
     const firstGoal = context.goals[0];
-    suggestions.push(`Am I on track for my ${firstGoal.name} goal?`);
+    suggestions.push(`Am I on track for my ${firstGoal.title} goal?`);
   }
 
   if (context.analytics.topCategories.length > 0) {

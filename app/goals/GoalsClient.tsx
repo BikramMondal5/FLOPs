@@ -71,18 +71,23 @@ export default function GoalsClient({ initialData, userName, userEmail, userImag
     }
   };
 
-  const handleCreateGoal = async (name: string, target: number) => {
+  const handleCreateGoal = async (
+    name: string,
+    target: number,
+    currentSaved: number,
+    targetDate: string,
+    monthlyContribution: number,
+    category: string,
+    priority: string
+  ) => {
     try {
-      const targetDate = new Date();
-      targetDate.setFullYear(targetDate.getFullYear() + 2); // 2 years out default
-
       const payload = {
         name,
         targetAmount: target,
-        currentContribution: 0,
-        targetDate: targetDate.toISOString(),
-        category: "Emergency Fund",
-        priority: "Medium",
+        currentContribution: currentSaved,
+        targetDate,
+        category,
+        priority,
         status: "Active",
       };
 

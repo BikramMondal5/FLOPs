@@ -27,8 +27,8 @@ export function evaluateSmartGoals(
       avgMonthlySavings
     );
 
-    // 4. Health indicators
-    const health = calculateGoalHealth(forecast.expectedDelayDays, g.status);
+    // 4. Health indicators (based on progress percentage)
+    const health = calculateGoalHealth(progress.progressPercentage, g.status);
 
     // 5. Probability
     const probability = calculateGoalProbability(

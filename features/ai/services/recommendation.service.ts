@@ -36,11 +36,11 @@ export function generateDeterministicRecommendations(
 
   // Rule 3: Goal progress tracking
   goals.goals.forEach((g) => {
-    if (g.health === "At Risk" || g.health === "Behind Schedule") {
+    if (g.health === "Started" && g.progressPercentage < 20) {
       list.push({
         category: g.goal.category,
         type: "neutral",
-        message: `Timeline Risk: Goal ${g.goal.name} is lagging. Required savings rate is ₹${g.requiredMonthlySavings.toLocaleString("en-IN")}/month.`,
+        message: `Goal "${g.goal.name}" needs attention. Required savings rate is ₹${g.requiredMonthlySavings.toLocaleString("en-IN")}/month.`,
       });
     }
   });

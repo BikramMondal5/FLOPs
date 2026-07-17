@@ -5,21 +5,37 @@ import { X, ArrowRight, ArrowLeft, Check, Sparkles } from "lucide-react";
 
 interface CreateGoalModalProps {
   onClose: () => void;
-  onCreate: (name: string, target: number) => void;
+  onCreate: (name: string, target: number, currentSaved: number, targetDate: string, monthlyContribution: number, category: string, priority: string) => void;
 }
 
 export default function CreateGoalModal({ onClose, onCreate }: CreateGoalModalProps) {
   const [step, setStep] = useState(1);
   const [goalName, setGoalName] = useState("");
   const [category, setCategory] = useState("Electronics");
+  const [priority, setPriority] = useState("Medium");
   const [targetAmount, setTargetAmount] = useState("150000");
-  const [currentSavings, setCurrentSavings] = useState("25000");
-  const [targetDate, setTargetDate] = useState("2026-12-31");
+  const [currentSavings, setCurrentSavings] = useState("0");
+  const [targetDate, setTargetDate] = useState(() => {
+    const date = new Date();
+    date.setFullYear(date.getFullYear() + 1);
+    return date.toISOString().split('T')[0];
+  });
   const [monthlyContribution, setMonthlyContribution] = useState("5000");
-  const [reminder, setReminder] = useState("Weekly");
 
   const handleFinish = () => {
-    onCreate(goalName || "Custom Savings Goal", Number(targetAmount));
+    if (!goalName.trim() || !targetAmount || Number(targetAmount) <= 0) {
+      alert("Please fill in all required fields");
+      return;
+    }
+    onCreate(
+      goalName.trim(),
+      Number(targetAmount),
+      Number(currentSavings),
+      targetDate,
+      Number(monthlyContribution),
+      category,
+      priority
+    );
   };
 
   return (
@@ -61,12 +77,29 @@ export default function CreateGoalModal({ onClose, onCreate }: CreateGoalModalPr
                   onChange={(e) => setCategory(e.target.value)}
                   className="text-xs text-[#18181B] bg-white border border-[#F6B7CF]/15 rounded-xl px-3.5 py-3 outline-none focus:border-[#F6B7CF]/40 transition-colors"
                 >
-                  <option value="Electronics">Electronics 💻</option>
-                  <option value="Home">Home 🏡</option>
-                  <option value="Vehicle">Vehicle 🚗</option>
-                  <option value="Travel">Travel ✈️</option>
-                  <option value="Education">Education 🎓</option>
-                  <option value="Emergency">Emergency 🛡️</option>
+                  <option value="Emergency Fund">🛡️ Emergency Fund</option>
+                  <option value="Electronics">💻 Electronics (Laptop)</option>
+                  <option value="Vehicle">🚗 Vehicle (Bike/Car)</option>
+                  <option value="Travel">✈️ Vacation</option>
+                  <option value="Home">🏡 House</option>
+                  <option value="Education">📚 Education</option>
+                  <option value="Wedding">💒 Wedding</option>
+                  <option value="Investment">📈 Investment</option>
+                  <option value="Retirement">🎯 Retirement</option>
+                  <option value="Other">📦 Other</option>
+                </select>
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[10.5px] font-bold text-zinc-400 uppercase tracking-wide">Priority</label>
+                <select
+                  value={priority}
+                  onChange={(e) => setPriority(e.target.value)}
+                  className="text-xs text-[#18181B] bg-white border border-[#F6B7CF]/15 rounded-xl px-3.5 py-3 outline-none focus:border-[#F6B7CF]/40 transition-colors"
+                >
+                  <option value="High">High</option>
+                  <option value="Medium">Medium</option>
+                  <option value="Low">Low</option>
                 </select>
               </div>
             </div>
@@ -120,23 +153,38 @@ export default function CreateGoalModal({ onClose, onCreate }: CreateGoalModalPr
 
           {step === 3 && (
             <div className="flex flex-col gap-4">
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[10.5px] font-bold text-zinc-400 uppercase tracking-wide">Reminder Frequency</label>
-                <select
-                  value={reminder}
-                  onChange={(e) => setReminder(e.target.value)}
-                  className="text-xs text-[#18181B] bg-white border border-[#F6B7CF]/15 rounded-xl px-3.5 py-3 outline-none focus:border-[#F6B7CF]/40 transition-colors"
-                >
-                  <option value="Daily">Daily</option>
-                  <option value="Weekly">Weekly</option>
-                  <option value="Monthly">Monthly</option>
-                </select>
+              <div className="p-5 bg-gradient-to-br from-[#FFF4F8] to-white border border-[#F6B7CF]/20 rounded-2xl">
+                <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wide mb-3">Goal Summary</p>
+                <div className="flex flex-col gap-2.5">
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-zinc-600">Goal:</span>
+                    <span className="font-bold text-zinc-800">{goalName || "Unnamed Goal"}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-zinc-600">Target:</span>
+                    <span className="font-bold text-[#D46A96]">₹{Number(targetAmount).toLocaleString("en-IN")}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-zinc-600">Current Saved:</span>
+                    <span className="font-bold text-emerald-600">₹{Number(currentSavings).toLocaleString("en-IN")}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-zinc-600">Monthly:</span>
+                    <span className="font-bold text-zinc-800">₹{Number(monthlyContribution).toLocaleString("en-IN")}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-zinc-600">Target Date:</span>
+                    <span className="font-bold text-zinc-800">{new Date(targetDate).toLocaleDateString("en-IN", { month: "short", year: "numeric" })}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-xs pt-2 border-t border-[#F6B7CF]/10">
+                    <span className="text-zinc-600">Remaining:</span>
+                    <span className="font-bold text-zinc-800">₹{(Number(targetAmount) - Number(currentSavings)).toLocaleString("en-IN")}</span>
+                  </div>
+                </div>
               </div>
-
-              <div className="w-full h-[80px] bg-[#FFF4F8]/50 border border-dashed border-[#F6B7CF]/30 rounded-2xl flex flex-col items-center justify-center text-center p-3 mt-4">
-                <span className="text-[11.5px] font-semibold text-[#D46A96]">Monthly Target: ₹{Number(monthlyContribution).toLocaleString()}/mo</span>
-                <span className="text-[9.5px] text-[#6B7280] mt-1">Calculated timeline matches your expected dates</span>
-              </div>
+              <p className="text-[9.5px] text-center text-zinc-400 leading-relaxed">
+                Based on your monthly contribution, this goal will track your progress automatically using your transaction data.
+              </p>
             </div>
           )}
         </div>

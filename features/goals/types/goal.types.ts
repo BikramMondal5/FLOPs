@@ -16,7 +16,7 @@ export type GoalPriority = "High" | "Medium" | "Low";
 
 export type GoalStatus = "Active" | "Completed" | "Paused" | "Cancelled";
 
-export type GoalHealth = "On Track" | "Behind Schedule" | "At Risk" | "Completed";
+export type GoalHealth = "Started" | "On Track" | "Almost There" | "Completed";
 
 export interface IGoal {
   _id: string;

@@ -56,11 +56,14 @@ export interface FinancialContext {
     daysRemaining: number;
   }>;
   goals: Array<{
-    name: string;
+    title: string;
     targetAmount: number;
-    currentAmount: number;
-    targetDate: string;
+    saved: number;
+    remaining: number;
     progress: number;
+    monthlyContribution: number;
+    etaMonths: number;
+    status: string;
   }>;
 }
 
@@ -178,11 +181,14 @@ export async function buildFinancialContext(
     const goals =
       goalsRes.success && goalsRes.data && goalsRes.data.goals
         ? goalsRes.data.goals.map((g) => ({
-            name: g.goal.name,
+            title: g.goal.name,
             targetAmount: g.goal.targetAmount,
-            currentAmount: g.saved,
-            targetDate: g.goal.targetDate,
+            saved: g.saved,
+            remaining: g.remaining,
             progress: g.progressPercentage,
+            monthlyContribution: g.requiredMonthlySavings,
+            etaMonths: Math.ceil(g.daysRemaining / 30.4),
+            status: g.health,
           }))
         : [];
 
