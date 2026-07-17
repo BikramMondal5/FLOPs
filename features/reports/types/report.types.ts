@@ -1,55 +1,28 @@
-export type ReportPeriod = "Daily" | "Weekly" | "Monthly";
+import type { FullReportDTO } from "../dto/report-dashboard.dto";
 
-export interface ReportSummary {
-  totalIncome: number;
-  totalExpense: number;
-  netSavings: number;
-  averageDailySpending: number;
-  savingsRate: number; // percentage (0-100)
-}
+export type ReportType = "Monthly" | "Annual" | "Custom";
 
-export interface BudgetReportItem {
+export type ReportFormat = "PDF" | "CSV";
+
+export interface IReport {
   _id: string;
-  name: string;
-  category: string;
-  budgetAmount: number;
-  actualSpent: number;
-  progressPercent: number;
-  status: "Healthy" | "Warning" | "Critical";
-}
-
-export interface GoalReportItem {
-  _id: string;
-  name: string;
-  targetAmount: number;
-  currentSavings: number;
-  progressPercent: number;
-  status: "On Track" | "Lagging" | "At Risk";
-  targetDate: string;
-}
-
-export interface HealthScores {
-  financialHealth: number;
-  budgetAdherence: number;
-  goalVelocity: number;
-  cashFlowRatio: number;
-}
-
-export interface CategoryComparison {
-  category: string;
-  currentAmount: number;
-  previousAmount: number;
-  diffAmount: number;
-  changePercent: number; // percentage (positive, negative or zero)
-}
-
-export interface ReportDashboardDTO {
-  period: ReportPeriod;
+  userId: string;
+  reportType: ReportType;
   startDate: string;
   endDate: string;
-  summary: ReportSummary;
-  budgetPerformance: BudgetReportItem[];
-  goalsProgress: GoalReportItem[];
-  healthScores: HealthScores;
-  tabularComparisons: CategoryComparison[];
+  generatedAt: string;
+  fileName: string;
+  summary: {
+    netWorth: number;
+    totalIncome: number;
+    totalExpenses: number;
+    savingsRate: number;
+    financialHealthScore: number | null;
+  };
+  aiSummary?: string;
+  fullData?: FullReportDTO; // Store complete report data for downloads
+  createdAt: string;
+  updatedAt: string;
 }
+
+export interface ReportDTO extends IReport {}

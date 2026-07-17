@@ -42,7 +42,7 @@ export default function QuickActions({ onAddTransaction }: QuickActionsProps) {
       name: "Generate Report",
       icon: FileText,
       color: "#FFF4F8",
-      href: "/ai-insights",
+      href: "/reports",
       onClick: undefined,
     },
   ];
