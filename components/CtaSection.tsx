@@ -2,10 +2,22 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function CtaSection() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const cardRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(cardRef, { once: true, amount: 0.18 });
+
+  const handleGetStarted = () => {
+    if (status === "authenticated") {
+      router.push("/overview");
+    } else {
+      router.push("/auth/login");
+    }
+  };
 
   // Spotlight mouse track state
   const [mouse, setMouse] = useState({ x: -9999, y: -9999, active: false });
@@ -274,7 +286,8 @@ export default function CtaSection() {
             className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 mt-6"
           >
             <button
-              className="inline-flex items-center justify-center gap-2 h-14 px-8 rounded-full bg-[#18181B] text-white hover:bg-black font-semibold text-base transition-all duration-300 hover:-translate-y-0.5 shadow-[0_6px_18px_rgba(24,24,27,0.15)] hover:shadow-[0_16px_40px_rgba(0,0,0,0.2)]"
+              onClick={handleGetStarted}
+              className="inline-flex items-center justify-center gap-2 h-14 px-8 rounded-full bg-[#18181B] text-white hover:bg-black font-semibold text-base transition-all duration-300 hover:-translate-y-0.5 shadow-[0_6px_18px_rgba(24,24,27,0.15)] hover:shadow-[0_16px_40px_rgba(0,0,0,0.2)] cursor-pointer"
               style={{ fontFamily: "var(--font-body)" }}
             >
               Get Started
@@ -283,10 +296,10 @@ export default function CtaSection() {
               </svg>
             </button>
             <button
-              className="inline-flex items-center justify-center h-14 px-8 rounded-full bg-[#F6B7CF] text-[#18181B] hover:bg-[#F3A9C5] font-semibold text-base transition-all duration-300 border border-[#E88AB3]/35 hover:-translate-y-0.5 hover:shadow-[0_12px_36px_rgba(232,138,179,0.35)]"
+              className="inline-flex items-center justify-center h-14 px-8 rounded-full bg-[#F6B7CF] text-[#18181B] hover:bg-[#F3A9C5] font-semibold text-base transition-all duration-300 border border-[#E88AB3]/35 hover:-translate-y-0.5 hover:shadow-[0_12px_36px_rgba(232,138,179,0.35)] cursor-pointer"
               style={{ fontFamily: "var(--font-body)" }}
             >
-              Explore Features
+              Watch Demo
             </button>
           </motion.div>
 

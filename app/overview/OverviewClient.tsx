@@ -6,7 +6,6 @@ import Navbar from "@/components/common/Navbar";
 import {
   Menu,
   X,
-  Bell,
   Wallet,
   Receipt,
   PiggyBank,
@@ -224,10 +223,6 @@ export default function OverviewClient({ userName, userEmail, userImage }: Overv
                   className="w-10 h-10 bg-white border border-[#F6B7CF]/15 rounded-full flex items-center justify-center text-[#18181B] shadow-sm hover:bg-[#FFF4F8] transition-colors disabled:opacity-40"
                 >
                   <RefreshCw className={`w-4 h-4 ${loadState === "loading" ? "animate-spin" : ""}`} />
-                </button>
-                <button className="w-10 h-10 bg-white border border-[#F6B7CF]/15 rounded-full flex items-center justify-center text-[#18181B] shadow-sm hover:bg-[#FFF4F8] transition-colors relative">
-                  <Bell className="w-4.5 h-4.5" />
-                  <span className="absolute top-2 right-2.5 w-1.5 h-1.5 bg-[#D46A96] rounded-full" />
                 </button>
               </div>
             </header>

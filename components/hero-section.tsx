@@ -1,12 +1,25 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import Navbar from "./common/Navbar";
 // import DigitalBadgesSection from "./DigitalBadgesSection";
 
 export default function HeroSection() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  const handleGetStarted = () => {
+    if (status === "authenticated") {
+      router.push("/overview");
+    } else {
+      router.push("/auth/login");
+    }
+  };
+
   return (
     <div
       id="home"
@@ -101,8 +114,8 @@ export default function HeroSection() {
 
         {/* CTA Buttons */}
         <div className="flex items-center justify-center gap-4 flex-col sm:flex-row w-full sm:w-auto mt-2">
-          <Link
-            href="/plan"
+          <button
+            onClick={handleGetStarted}
             className="no-underline cta-lift"
             style={{
               fontFamily: "var(--font-body)",
@@ -116,10 +129,12 @@ export default function HeroSection() {
               display: "inline-flex",
               alignItems: "center",
               justifyContent: "center",
+              cursor: "pointer",
+              border: "none",
             }}
           >
             Get Started
-          </Link>
+          </button>
 
           <Link
             href="/patterns"
@@ -134,7 +149,7 @@ export default function HeroSection() {
               boxShadow: "0 4px 16px rgba(246, 183, 207, 0.4)",
             }}
           >
-            Explore Features
+            Watch Demo
             <svg
               width="18"
               height="18"
