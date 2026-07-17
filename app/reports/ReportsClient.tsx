@@ -4,6 +4,8 @@ import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "@/components/common/Navbar";
 import Sidebar from "@/components/dashboard/Sidebar";
+import ConfirmDialog from "@/components/common/ConfirmDialog";
+import { toast } from "sonner";
 import {
   Menu,
   X,
@@ -36,6 +38,8 @@ export default function ReportsClient({ userName, userEmail, userImage }: Report
   const [isDownloadingPDF, setIsDownloadingPDF] = useState(false);
   const [isDownloadingCSV, setIsDownloadingCSV] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [deleteReportId, setDeleteReportId] = useState<string | null>(null);
   const [summary, setSummary] = useState({
     totalReportsGenerated: 0,
     latestReportDate: null as string | null,
@@ -98,28 +102,42 @@ export default function ReportsClient({ userName, userEmail, userImage }: Report
         setGeneratedReport(json.data);
         fetchSummary();
         fetchHistory();
-        alert("✅ Financial Report Generated Successfully");
+        toast.success("📊 Financial Report Generated Successfully");
       } else {
-        alert("Failed to generate report: " + (json.message || "Unknown error"));
+        toast.error("Failed to generate report: " + (json.message || "Unknown error"));
       }
     } catch (err) {
       console.error("Failed to generate report", err);
-      alert("Failed to generate report");
+      toast.error("Failed to generate report");
     } finally {
       setIsGenerating(false);
     }
   };
 
   const handleDeleteReport = async (id: string) => {
-    if (!confirm("Delete this report?")) return;
     try {
       const res = await fetch(`/api/reports/${id}`, { method: "DELETE" });
       if (res.ok) {
         fetchHistory();
         fetchSummary();
+        toast.success("🗑️ Report deleted successfully");
+      } else {
+        toast.error("Failed to delete report");
       }
     } catch (err) {
       console.error(err);
+      toast.error("Failed to delete report");
+    }
+  };
+
+  const openDeleteConfirm = (id: string) => {
+    setDeleteReportId(id);
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (deleteReportId) {
+      handleDeleteReport(deleteReportId);
     }
   };
 
@@ -135,10 +153,10 @@ export default function ReportsClient({ userName, userEmail, userImage }: Report
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      alert("✅ PDF downloaded successfully");
+      toast.success("✅ PDF downloaded successfully");
     } catch (err) {
       console.error("PDF generation failed", err);
-      alert("❌ Unable to generate PDF. Please try again.");
+      toast.error("❌ Unable to generate PDF. Please try again.");
     } finally {
       setIsDownloadingPDF(false);
     }
@@ -157,10 +175,10 @@ export default function ReportsClient({ userName, userEmail, userImage }: Report
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      alert("✅ CSV downloaded successfully");
+      toast.success("✅ CSV downloaded successfully");
     } catch (err) {
       console.error("CSV generation failed", err);
-      alert("❌ Unable to generate CSV. Please try again.");
+      toast.error("❌ Unable to generate CSV. Please try again.");
     } finally {
       setIsDownloadingCSV(false);
     }
@@ -173,7 +191,7 @@ export default function ReportsClient({ userName, userEmail, userImage }: Report
 
       const json = await res.json();
       if (!json.success || !json.data) {
-        alert("Failed to fetch report");
+        toast.error("Failed to fetch report");
         return;
       }
 
@@ -184,7 +202,7 @@ export default function ReportsClient({ userName, userEmail, userImage }: Report
       }
     } catch (err) {
       console.error("Failed to download report", err);
-      alert("Failed to download report");
+      toast.error("Failed to download report");
     }
   };
 
@@ -545,7 +563,7 @@ export default function ReportsClient({ userName, userEmail, userImage }: Report
                           CSV
                         </button>
                         <button
-                          onClick={() => handleDeleteReport(report._id)}
+                          onClick={() => openDeleteConfirm(report._id)}
                           className="p-1.5 text-zinc-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -576,6 +594,18 @@ export default function ReportsClient({ userName, userEmail, userImage }: Report
           </motion.main>
         </div>
       </div>
+
+      {/* Confirm Delete Dialog */}
+      <ConfirmDialog
+        isOpen={deleteConfirmOpen}
+        onClose={() => setDeleteConfirmOpen(false)}
+        onConfirm={confirmDelete}
+        title="Delete Report?"
+        description="This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        variant="danger"
+      />
     </div>
   );
 }

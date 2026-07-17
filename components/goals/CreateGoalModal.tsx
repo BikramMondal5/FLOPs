@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { X, ArrowRight, ArrowLeft, Check, Sparkles } from "lucide-react";
+import { toast } from "sonner";
 
 interface CreateGoalModalProps {
   onClose: () => void;
@@ -24,7 +25,7 @@ export default function CreateGoalModal({ onClose, onCreate }: CreateGoalModalPr
 
   const handleFinish = () => {
     if (!goalName.trim() || !targetAmount || Number(targetAmount) <= 0) {
-      alert("Please fill in all required fields");
+      toast.error("Please fill in all required fields");
       return;
     }
     onCreate(

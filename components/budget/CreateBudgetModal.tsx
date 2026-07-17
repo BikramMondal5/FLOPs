@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { X, Check, Sparkles } from "lucide-react";
+import { toast } from "sonner";
 
 const TRANSACTION_CATEGORIES = [
   "Housing",
@@ -52,7 +53,7 @@ export default function CreateBudgetModal({ onClose, onCreate }: CreateBudgetMod
   
   const handleCreate = () => {
     if (!budgetName.trim() || !monthlyLimit || Number(monthlyLimit) <= 0) {
-      alert("Please fill in all required fields");
+      toast.error("Please fill in all required fields");
       return;
     }
     onCreate(budgetName.trim(), Number(monthlyLimit), category, Number(alertThreshold));

@@ -3,6 +3,8 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "@/components/common/Navbar";
+import ConfirmDialog from "@/components/common/ConfirmDialog";
+import { toast } from "sonner";
 import {
   Menu,
   X,
@@ -41,6 +43,8 @@ export default function GoalsClient({ initialData, userName, userEmail, userImag
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [deleteGoalId, setDeleteGoalId] = useState<string | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [mouse, setMouse] = useState({ x: -9999, y: -9999, active: false });
@@ -100,11 +104,13 @@ export default function GoalsClient({ initialData, userName, userEmail, userImag
       if (res.ok) {
         setCreateModalOpen(false);
         handleRefetch();
+        toast.success("🎯 Goal created successfully");
       } else {
-        alert("Failed to create goal.");
+        toast.error("Failed to create goal.");
       }
     } catch (err) {
       console.error(err);
+      toast.error("Failed to create goal.");
     }
   };
 
@@ -123,28 +129,41 @@ export default function GoalsClient({ initialData, userName, userEmail, userImag
 
       if (res.ok) {
         handleRefetch();
-        alert(`Successfully contributed ₹${amount.toLocaleString()}!`);
+        toast.success(`💰 Successfully contributed ₹${amount.toLocaleString()}!`);
       } else {
-        alert("Failed to contribute money.");
+        toast.error("Failed to contribute money.");
       }
     } catch (err) {
       console.error(err);
+      toast.error("Failed to contribute money.");
     }
   };
 
   const handleDeleteGoal = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this goal?")) return;
     try {
       const res = await fetch(`/api/goals/${id}`, { method: "DELETE" });
       if (res.ok) {
         setDetailsOpen(false);
         setSelectedGoal(null);
         handleRefetch();
+        toast.success("🗑️ Goal deleted successfully");
       } else {
-        alert("Failed to delete goal.");
+        toast.error("Failed to delete goal.");
       }
     } catch (err) {
       console.error(err);
+      toast.error("Failed to delete goal.");
+    }
+  };
+
+  const openDeleteConfirm = (id: string) => {
+    setDeleteGoalId(id);
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (deleteGoalId) {
+      handleDeleteGoal(deleteGoalId);
     }
   };
 
@@ -408,11 +427,23 @@ export default function GoalsClient({ initialData, userName, userEmail, userImag
               setDetailsOpen(false);
               setSelectedGoal(null);
             }}
-            onDelete={handleDeleteGoal}
+            onDelete={openDeleteConfirm}
             onAddMoney={handleAddMoney}
           />
         )}
       </AnimatePresence>
+
+      {/* Confirm Delete Dialog */}
+      <ConfirmDialog
+        isOpen={deleteConfirmOpen}
+        onClose={() => setDeleteConfirmOpen(false)}
+        onConfirm={confirmDelete}
+        title="Delete Goal?"
+        description="This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        variant="danger"
+      />
     </div>
   );
 }

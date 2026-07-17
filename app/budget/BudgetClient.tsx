@@ -3,6 +3,8 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "@/components/common/Navbar";
+import ConfirmDialog from "@/components/common/ConfirmDialog";
+import { toast } from "sonner";
 import {
   Menu,
   X,
@@ -39,6 +41,8 @@ export default function BudgetClient({ initialData, userName, userEmail, userIma
   const [data, setData] = useState<BudgetDashboardDTO>(initialData);
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [deleteBudgetId, setDeleteBudgetId] = useState<string | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [mouse, setMouse] = useState({ x: -9999, y: -9999, active: false });
@@ -95,26 +99,40 @@ export default function BudgetClient({ initialData, userName, userEmail, userIma
       if (res.ok) {
         setCreateModalOpen(false);
         handleRefetch();
+        toast.success("💰 Budget created successfully");
       } else {
-        alert("Failed to create budget.");
+        toast.error("Failed to create budget.");
       }
     } catch (err) {
       console.error(err);
+      toast.error("Failed to create budget.");
     }
   };
 
   // Delete Budget Mutation
   const handleDeleteBudget = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this category tracker?")) return;
     try {
       const res = await fetch(`/api/budgets/${id}`, { method: "DELETE" });
       if (res.ok) {
         handleRefetch();
+        toast.success("🗑️ Budget deleted successfully");
       } else {
-        alert("Failed to delete budget.");
+        toast.error("Failed to delete budget.");
       }
     } catch (err) {
       console.error(err);
+      toast.error("Failed to delete budget.");
+    }
+  };
+
+  const openDeleteConfirm = (id: string) => {
+    setDeleteBudgetId(id);
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (deleteBudgetId) {
+      handleDeleteBudget(deleteBudgetId);
     }
   };
 
@@ -303,7 +321,7 @@ export default function BudgetClient({ initialData, userName, userEmail, userIma
                     className="p-6 bg-white border border-[#F6B7CF]/15 rounded-[24px] shadow-sm flex flex-col relative"
                   >
                     <button
-                      onClick={() => handleDeleteBudget(eb.budget._id)}
+                      onClick={() => openDeleteConfirm(eb.budget._id)}
                       className="absolute top-4 right-4 p-1.5 rounded-lg text-zinc-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -472,6 +490,18 @@ export default function BudgetClient({ initialData, userName, userEmail, userIma
           />
         )}
       </AnimatePresence>
+
+      {/* Confirm Delete Dialog */}
+      <ConfirmDialog
+        isOpen={deleteConfirmOpen}
+        onClose={() => setDeleteConfirmOpen(false)}
+        onConfirm={confirmDelete}
+        title="Delete Budget?"
+        description="This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        variant="danger"
+      />
     </div>
   );
 }

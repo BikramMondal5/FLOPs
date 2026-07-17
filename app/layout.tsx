@@ -3,6 +3,7 @@ import { Inter, Instrument_Serif, Geist } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import SessionProvider from "@/components/providers/SessionProvider";
+import { Toaster } from "sonner";
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
@@ -36,6 +37,7 @@ export default function RootLayout({
     >
       <body>
         <SessionProvider>{children}</SessionProvider>
+        <Toaster position="top-right" richColors closeButton />
       </body>
     </html>
   );

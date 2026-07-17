@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Mail, Sparkles, ArrowLeft } from "lucide-react";
+import { toast } from "sonner";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -22,7 +23,7 @@ export default function ForgotPasswordPage() {
 
     setError("");
     setSubmitted(true);
-    alert(`Reset link sent successfully to: ${email}`);
+    toast.success("✉️ Reset link sent successfully to: " + email);
   };
 
   return (
