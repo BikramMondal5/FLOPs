@@ -16,6 +16,7 @@ import { mapEngineResultsToGoalsDashboardDTO } from "../mappers/goal.mapper";
 import { createGoalSchema, updateGoalSchema } from "../schemas/goal.schema";
 import { logger } from "@/lib/logger";
 import { invalidateAICache } from "@/features/ai/services/ai.service";
+import { invalidateNotificationsCache } from "@/features/notifications/services/notification.service";
 
 interface CacheBlock {
   userId: string;
@@ -126,6 +127,7 @@ export async function createGoalService(userId: string, body: unknown): Promise<
 
     invalidateGoalsCache(userId);
     invalidateAICache(userId);
+    invalidateNotificationsCache(userId);
 
     return { success: true, message: "Goal created successfully", data: goal };
   } catch (err) {
@@ -158,6 +160,7 @@ export async function updateGoalService(
 
     invalidateGoalsCache(userId);
     invalidateAICache(userId);
+    invalidateNotificationsCache(userId);
 
     return { success: true, message: "Goal updated successfully", data: updated };
   } catch (err) {
@@ -177,6 +180,7 @@ export async function deleteGoalService(goalId: string, userId: string): Promise
 
     invalidateGoalsCache(userId);
     invalidateAICache(userId);
+    invalidateNotificationsCache(userId);
 
     return { success: true, message: "Goal deleted successfully", data: null };
   } catch (err) {

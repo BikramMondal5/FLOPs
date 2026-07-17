@@ -1,140 +1,159 @@
 import { connectDB } from "@/lib/mongodb";
-import { logger } from "@/lib/logger";
 import type { ApiResponse } from "@/features/accounts/types/account.types";
-import type { NotificationDTO } from "../types/notification.types";
-import { compileDynamicNotifications } from "../engine/notification.engine";
-import { findBudgetsByUserId } from "@/features/budget/repositories/budget.repository";
-import { findGoalsByUserId } from "@/features/goals/repositories/goal.repository";
+import type { NotificationDTO, NotificationSummaryDTO } from "../dto/notification.dto";
+import { getBudgetDashboardService } from "@/features/budget/services/budget.service";
+import { getGoalsDashboardService } from "@/features/goals/services/goal.service";
+import { getDashboardAnalyticsService } from "@/features/analytics/services/analytics.service";
+import { generateBudgetNotifications } from "../generators/budget.generator";
+import { generateGoalNotifications } from "../generators/goal.generator";
+import { generateHealthNotifications } from "../generators/health.generator";
+import { generateAINotifications } from "../generators/ai.generator";
 import {
-  findReadNotificationIds,
-  findUserLastReadTimestamp,
-  updateLastReadAllTimestamp,
+  findReadStatusByUserId,
+  markNotificationRead,
+  markAllNotificationsRead,
 } from "../repositories/notification.repository";
-import { TRANSACTIONS_COLLECTION } from "@/lib/models/Transaction";
-import { serializeTransaction } from "@/lib/models/Transaction";
-import type { TransactionDTO } from "@/features/transactions/types/transaction.types";
-import { ObjectId } from "mongodb";
+import { logger } from "@/lib/logger";
 
-interface CacheBlock {
-  userId: string;
-  notifications: NotificationDTO[];
-  timestamp: number;
-}
-
-let notificationsCache: CacheBlock[] = [];
-const CACHE_TTL_MS = 60 * 1000;
-
+// Placeholder cache invalidation
 export function invalidateNotificationsCache(userId: string) {
-  logger.info("Invalidating notifications cache", { userId });
-  notificationsCache = notificationsCache.filter((c) => c.userId !== userId);
+  logger.info("Notifications cache invalidation requested", { userId });
 }
 
+// ─────────────────────────────────────────────
+// Get Notifications
+// ─────────────────────────────────────────────
 export async function getNotificationsService(
   userId: string
-): Promise<ApiResponse<NotificationDTO[]>> {
-  const nowTime = Date.now();
-  const cached = notificationsCache.find((c) => c.userId === userId && nowTime - c.timestamp < CACHE_TTL_MS);
-
-  if (cached) {
-    logger.info("Serving notifications from cache", { userId });
-    return {
-      success: true,
-      message: "Notifications retrieved successfully (cached)",
-      data: cached.notifications,
-    };
-  }
-
+): Promise<ApiResponse<NotificationSummaryDTO>> {
   try {
-    const db = await connectDB();
-
-    // Calculate current month's start/end dates for transactions query
-    const now = new Date();
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
-    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
-
-    // 1. Fetch budgets, goals, transactions, and read markers
-    const txCol = db.collection(TRANSACTIONS_COLLECTION);
-    const [budgets, goals, currentTxRaw, readIds, lastReadDate] = await Promise.all([
-      findBudgetsByUserId(db, userId),
-      findGoalsByUserId(db, userId),
-      txCol
-        .find({
-          userId: new ObjectId(userId),
-          isArchived: false,
-          transactionDate: { $gte: startOfMonth, $lte: endOfMonth },
-        })
-        .toArray(),
-      findReadNotificationIds(db, userId),
-      findUserLastReadTimestamp(db, userId),
+    // Fetch data from all modules (reuse existing services)
+    const [budgetsRes, goalsRes, analyticsRes] = await Promise.all([
+      getBudgetDashboardService(userId),
+      getGoalsDashboardService(userId),
+      getDashboardAnalyticsService(userId, "This Month"),
     ]);
 
-    const currentTx = currentTxRaw.map(serializeTransaction) as unknown as TransactionDTO[];
+    const allNotifications: NotificationDTO[] = [];
 
-    // 2. Generate dynamic notifications
-    const rawNotifications = compileDynamicNotifications(userId, budgets, goals, currentTx);
+    // Generate budget notifications
+    if (budgetsRes.success && budgetsRes.data && budgetsRes.data.budgets.length > 0) {
+      const budgetNotifs = generateBudgetNotifications(budgetsRes.data.budgets);
+      allNotifications.push(...budgetNotifs);
+    }
 
-    // 3. Apply read histories
-    const finalized = rawNotifications.map((n) => {
-      let isRead = false;
-      if (readIds.includes(n.id)) {
-        isRead = true;
-      } else if (lastReadDate && new Date(n.createdAt).getTime() <= lastReadDate.getTime()) {
-        isRead = true;
-      }
-      return { ...n, isRead };
+    // Generate goal notifications
+    if (goalsRes.success && goalsRes.data && goalsRes.data.goals.length > 0) {
+      const goalNotifs = generateGoalNotifications(goalsRes.data.goals);
+      allNotifications.push(...goalNotifs);
+    }
+
+    // Generate health notifications
+    if (analyticsRes.success && analyticsRes.data) {
+      const healthNotifs = generateHealthNotifications(analyticsRes.data.health);
+      allNotifications.push(...healthNotifs);
+
+      // Generate AI notifications
+      const aiNotifs = generateAINotifications(
+        analyticsRes.data.categories,
+        analyticsRes.data.summary.savingsRate
+      );
+      allNotifications.push(...aiNotifs);
+    }
+
+    // Fetch read status
+    const db = await connectDB();
+    const readStatuses = await findReadStatusByUserId(db, userId);
+    const readMap = new Map(readStatuses.map((s) => [s.notificationId, s.read]));
+
+    // Apply read status
+    allNotifications.forEach((notif) => {
+      notif.read = readMap.get(notif.id) || false;
     });
 
-    // Sort: Unread first, then severity (critical -> warning -> info), then date
-    const sorted = finalized.sort((a, b) => {
-      if (a.isRead !== b.isRead) {
-        return a.isRead ? 1 : -1;
-      }
-      const severityOrder = { critical: 0, warning: 1, info: 2 };
-      const sevA = severityOrder[a.severity] ?? 3;
-      const sevB = severityOrder[b.severity] ?? 3;
-      if (sevA !== sevB) return sevA - sevB;
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    // Sort by severity and recency
+    const severityOrder = { critical: 0, warning: 1, success: 2, info: 3 };
+    allNotifications.sort((a, b) => {
+      const severityDiff = severityOrder[a.severity] - severityOrder[b.severity];
+      if (severityDiff !== 0) return severityDiff;
+      return b.createdAt.getTime() - a.createdAt.getTime();
     });
 
-    // Save to cache
-    notificationsCache = notificationsCache.filter((c) => c.userId !== userId);
-    notificationsCache.push({
-      userId,
-      notifications: sorted,
-      timestamp: nowTime,
-    });
+    const totalUnread = allNotifications.filter((n) => !n.read).length;
 
     return {
       success: true,
-      message: "Notifications compiled successfully",
-      data: sorted,
+      message: "Notifications retrieved successfully",
+      data: {
+        totalUnread,
+        notifications: allNotifications,
+      },
     };
   } catch (error) {
-    logger.error("Failed to compile user notifications", error, { userId });
+    logger.error("Failed to get notifications", error, { userId });
     return {
       success: false,
-      message: "Failed to compile active account notifications.",
+      message: "Failed to retrieve notifications",
     };
   }
 }
 
-export async function readAllNotificationsService(userId: string): Promise<ApiResponse<null>> {
+// ─────────────────────────────────────────────
+// Mark Notification as Read
+// ─────────────────────────────────────────────
+export async function markNotificationReadService(
+  userId: string,
+  notificationId: string
+): Promise<ApiResponse<null>> {
   try {
     const db = await connectDB();
-    await updateLastReadAllTimestamp(db, userId);
-
-    invalidateNotificationsCache(userId);
+    await markNotificationRead(db, userId, notificationId);
 
     return {
       success: true,
-      message: "All alerts reset successfully",
+      message: "Notification marked as read",
       data: null,
     };
   } catch (error) {
-    logger.error("Failed to mark notifications read-all", error, { userId });
+    logger.error("Failed to mark notification as read", error, { userId, notificationId });
     return {
       success: false,
-      message: "Failed to update alert statuses.",
+      message: "Failed to mark notification as read",
+    };
+  }
+}
+
+// ─────────────────────────────────────────────
+// Mark All Notifications as Read
+// ─────────────────────────────────────────────
+export async function markAllNotificationsReadService(
+  userId: string
+): Promise<ApiResponse<null>> {
+  try {
+    // Get all current notifications
+    const notificationsRes = await getNotificationsService(userId);
+    if (!notificationsRes.success || !notificationsRes.data) {
+      return { success: false, message: "Failed to fetch notifications" };
+    }
+
+    const notificationIds = notificationsRes.data.notifications.map((n) => n.id);
+    if (notificationIds.length === 0) {
+      return { success: true, message: "No notifications to mark as read", data: null };
+    }
+
+    const db = await connectDB();
+    await markAllNotificationsRead(db, userId, notificationIds);
+
+    return {
+      success: true,
+      message: "All notifications marked as read",
+      data: null,
+    };
+  } catch (error) {
+    logger.error("Failed to mark all notifications as read", error, { userId });
+    return {
+      success: false,
+      message: "Failed to mark all notifications as read",
     };
   }
 }

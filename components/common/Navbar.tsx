@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { Bell } from "lucide-react";
+import NotificationDrawer from "@/components/notifications/NotificationDrawer";
 
 const navLinks = [
   { href: "/#home", label: "Home" },
@@ -24,6 +26,8 @@ interface NavbarProps {
 
 export default function Navbar({ userInfo, ctaText = "Get Started", ctaHref = "/plan" }: NavbarProps) {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isNotificationDrawerOpen, setIsNotificationDrawerOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -37,6 +41,28 @@ export default function Navbar({ userInfo, ctaText = "Get Started", ctaHref = "/
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    // Fetch unread count if user is logged in
+    if (userInfo) {
+      fetchUnreadCount();
+      // Poll every 30 seconds
+      const interval = setInterval(fetchUnreadCount, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [userInfo]);
+
+  const fetchUnreadCount = async () => {
+    try {
+      const res = await fetch("/api/notifications");
+      const json = await res.json();
+      if (json.success && json.data) {
+        setUnreadCount(json.data.totalUnread);
+      }
+    } catch (err) {
+      console.error("Failed to fetch unread count", err);
+    }
+  };
 
   return (
     <nav
@@ -95,6 +121,19 @@ export default function Navbar({ userInfo, ctaText = "Get Started", ctaHref = "/
         <div className="flex items-center gap-3 z-10 relative">
           {userInfo ? (
             <>
+              {/* Notification Bell */}
+              <button
+                onClick={() => setIsNotificationDrawerOpen(true)}
+                className="relative w-9 h-9 flex items-center justify-center rounded-lg hover:bg-[#FFF4F8] transition-colors"
+              >
+                <Bell className="w-5 h-5 text-zinc-700" />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#D46A96] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                    {unreadCount > 9 ? "9+" : unreadCount}
+                  </span>
+                )}
+              </button>
+
               <div className="text-right hidden sm:block">
                 <p className="text-[13px] font-semibold text-[#18181B] m-0 leading-none">
                   {userInfo.name}
@@ -136,6 +175,17 @@ export default function Navbar({ userInfo, ctaText = "Get Started", ctaHref = "/
           )}
         </div>
       </div>
+
+      {/* Notification Drawer */}
+      {userInfo && (
+        <NotificationDrawer
+          isOpen={isNotificationDrawerOpen}
+          onClose={() => {
+            setIsNotificationDrawerOpen(false);
+            fetchUnreadCount(); // Refresh count when drawer closes
+          }}
+        />
+      )}
     </nav>
   );
 }

@@ -16,6 +16,7 @@ import { createBudgetSchema, updateBudgetSchema } from "../schemas/budget.schema
 import { logger } from "@/lib/logger";
 import { invalidateGoalsCache } from "@/features/goals/services/goal.service";
 import { invalidateAICache } from "@/features/ai/services/ai.service";
+import { invalidateNotificationsCache } from "@/features/notifications/services/notification.service";
 
 interface CacheBlock {
   userId: string;
@@ -121,6 +122,7 @@ export async function createBudgetService(userId: string, body: unknown): Promis
     invalidateBudgetCache(userId);
     invalidateGoalsCache(userId);
     invalidateAICache(userId);
+    invalidateNotificationsCache(userId);
 
     return { success: true, message: "Budget created successfully", data: budget };
   } catch (err) {
@@ -154,6 +156,7 @@ export async function updateBudgetService(
     invalidateBudgetCache(userId);
     invalidateGoalsCache(userId);
     invalidateAICache(userId);
+    invalidateNotificationsCache(userId);
 
     return { success: true, message: "Budget updated successfully", data: updated };
   } catch (err) {
@@ -174,6 +177,7 @@ export async function deleteBudgetService(budgetId: string, userId: string): Pro
     invalidateBudgetCache(userId);
     invalidateGoalsCache(userId);
     invalidateAICache(userId);
+    invalidateNotificationsCache(userId);
 
     return { success: true, message: "Budget deleted successfully", data: null };
   } catch (err) {

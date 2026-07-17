@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { readAllNotificationsService } from "@/features/notifications/services/notification.service";
+import { markAllNotificationsReadService } from "@/features/notifications/services/notification.service";
 
 export async function PATCH() {
   const session = await auth();
@@ -12,7 +12,7 @@ export async function PATCH() {
     );
   }
 
-  const result = await readAllNotificationsService(session.user.id);
+  const result = await markAllNotificationsReadService(session.user.id);
   return NextResponse.json(result, {
     status: result.success ? 200 : 500,
   });

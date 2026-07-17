@@ -17,6 +17,7 @@ import {
 } from "../repositories/report.repository";
 import { generateReportSchema } from "../schemas/report.schema";
 import { logger } from "@/lib/logger";
+import { invalidateNotificationsCache } from "@/features/notifications/services/notification.service";
 
 // Placeholder cache invalidation (reports are generated on-demand, not cached)
 export function invalidateReportsCache(userId: string) {
@@ -307,6 +308,8 @@ Keep it professional and concise.`;
       aiSummary,
       fullData: fullReport, // Store complete report for downloads
     });
+
+    invalidateNotificationsCache(userId);
 
     return {
       success: true,
