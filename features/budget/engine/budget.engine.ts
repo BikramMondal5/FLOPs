@@ -17,27 +17,32 @@ export function evaluateSmartBudgets(
   });
 
   const now = new Date();
+  const currentDay = now.getDate(); // Day of month (1-31)
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
+  
+  // Calculate total days in current month
+  const totalDaysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+  
+  // Elapsed days is the current day (e.g., if today is the 16th, elapsed = 16)
+  const elapsedDays = Math.max(1, currentDay);
+  
+  // Days remaining in month
+  const daysRemaining = Math.max(0, totalDaysInMonth - currentDay);
 
   return budgets.map((b) => {
     // 1. Resolve spent amount dynamically from analytics
     const analytics = categoryMap.get(b.category);
     const spent = analytics ? analytics.spent : 0;
 
-    // 2. Dates calculations
-    const start = new Date(b.startDate);
-    const end = new Date(b.endDate);
-    const totalDays = Math.ceil(Math.abs(end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) || 30;
-    const elapsedDays = Math.ceil(Math.abs(now.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) || 1;
-    const daysRemaining = Math.max(0, Math.ceil((end.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
-
-    // 3. Process indicators
+    // 2. Process indicators
     const progress = calculateProgress(spent, b.budgetAmount);
     const status = calculateBudgetStatus(progress.progressPercentage);
 
-    // 4. Projections
-    const forecast = calculateForecast(spent, b.budgetAmount, elapsedDays, totalDays);
+    // 3. Projections based on current month
+    const forecast = calculateForecast(spent, b.budgetAmount, elapsedDays, totalDaysInMonth);
 
-    // 5. Threshold checks
+    // 4. Threshold checks
     const alertResult = checkBudgetAlert(
       b.name,
       spent,

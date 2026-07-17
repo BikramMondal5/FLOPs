@@ -6,24 +6,39 @@ export function mapEngineResultsToDashboardDTO(
   let totalBudgetLimit = 0;
   let totalSpent = 0;
   let exceededBudgetsCount = 0;
-  let nearLimitBudgetsCount = 0;
-  let onTrackBudgetsCount = 0;
+  let warningBudgetsCount = 0;
+  let watchBudgetsCount = 0;
+  let healthyBudgetsCount = 0;
   
   let projectedEndSpend = 0;
 
   const alerts: string[] = [];
 
-  evaluatedBudgets.forEach((eb) => {
+  // Sort budgets by status priority: Exceeded > Warning > Watch > Healthy
+  const sortedBudgets = [...evaluatedBudgets].sort((a, b) => {
+    const priority = { Exceeded: 0, Warning: 1, Watch: 2, Healthy: 3 };
+    return priority[a.status] - priority[b.status];
+  });
+
+  sortedBudgets.forEach((eb) => {
     totalBudgetLimit += eb.budget.budgetAmount;
     totalSpent += eb.spent;
     projectedEndSpend += eb.projectedSpend;
 
+    // Count by status
     if (eb.status === "Exceeded") exceededBudgetsCount++;
-    else if (eb.status === "Near Limit") nearLimitBudgetsCount++;
-    else onTrackBudgetsCount++;
+    else if (eb.status === "Warning") warningBudgetsCount++;
+    else if (eb.status === "Watch") watchBudgetsCount++;
+    else healthyBudgetsCount++;
 
-    if (eb.alertTriggered && eb.alertMessage) {
-      alerts.push(eb.alertMessage);
+    // Generate specific alerts
+    if (eb.status === "Exceeded") {
+      const overage = eb.spent - eb.budget.budgetAmount;
+      alerts.push(`${eb.budget.name} budget exceeded by ₹${overage.toLocaleString("en-IN")}.`);
+    } else if (eb.status === "Warning") {
+      alerts.push(`${eb.budget.name} budget has reached ${eb.progressPercentage.toFixed(0)}%.`);
+    } else if (eb.projectedStatus === "Exceeded" && (eb.status === "Healthy" || eb.status === "Watch")) {
+      alerts.push(`${eb.budget.name} budget will likely exceed limit by month end.`);
     }
   });
 
@@ -37,8 +52,8 @@ export function mapEngineResultsToDashboardDTO(
     overallHealthProgress,
     activeBudgetsCount: evaluatedBudgets.filter((b) => b.budget.isActive).length,
     exceededBudgetsCount,
-    onTrackBudgetsCount,
-    nearLimitBudgetsCount,
+    onTrackBudgetsCount: healthyBudgetsCount,
+    nearLimitBudgetsCount: warningBudgetsCount + watchBudgetsCount,
   };
 
   const expectedOverspending = Math.max(0, projectedEndSpend - totalBudgetLimit);
@@ -50,25 +65,41 @@ export function mapEngineResultsToDashboardDTO(
     expectedSavings,
   };
 
-  // Formulate rule-based dynamic dashboard insights
+  // Generate rule-based insights
   const insights: string[] = [];
+  
   if (exceededBudgetsCount > 0) {
-    insights.push(`Action Required: ${exceededBudgetsCount} budget categories have exceeded limits.`);
+    insights.push(`Action Required: ${exceededBudgetsCount} budget ${exceededBudgetsCount === 1 ? 'category has' : 'categories have'} exceeded limits.`);
   }
-  if (nearLimitBudgetsCount > 0) {
-    insights.push(`Budget Warning: ${nearLimitBudgetsCount} categories are nearing utilization limits.`);
+  
+  if (warningBudgetsCount > 0) {
+    insights.push(`${warningBudgetsCount} ${warningBudgetsCount === 1 ? 'budget is' : 'budgets are'} approaching utilization limits (80%+).`);
   }
-  if (totalBudgetLimit > 0 && overallHealthProgress < 60) {
-    insights.push("Utilization Healthy: Total spending remains comfortably below active limits.");
+  
+  if (watchBudgetsCount > 0) {
+    insights.push(`${watchBudgetsCount} ${watchBudgetsCount === 1 ? 'budget requires' : 'budgets require'} monitoring (60-80% utilized).`);
   }
 
-  if (insights.length === 0) {
-    insights.push("Status Healthy: Create category trackers to monitor spending habits.");
+  // Add projection-based insights
+  const projectedExceededCount = evaluatedBudgets.filter(
+    (eb) => eb.projectedStatus === "Exceeded" && eb.status !== "Exceeded"
+  ).length;
+  
+  if (projectedExceededCount > 0) {
+    insights.push(`${projectedExceededCount} ${projectedExceededCount === 1 ? 'budget is' : 'budgets are'} projected to exceed limits by month end.`);
+  }
+
+  if (healthyBudgetsCount === evaluatedBudgets.length && evaluatedBudgets.length > 0) {
+    insights.push("All budget categories are performing well and within healthy utilization ranges.");
+  }
+
+  if (insights.length === 0 && evaluatedBudgets.length === 0) {
+    insights.push("Create your first budget tracker to unlock projections and budget alerts.");
   }
 
   return {
     summary,
-    budgets: evaluatedBudgets,
+    budgets: sortedBudgets,
     alerts,
     forecast,
     insights,

@@ -76,14 +76,14 @@ export default async function TransactionsPage() {
       />
 
       {/* Main Grid Layout Container with top padding for fixed navbar */}
-      <div className="flex-1 w-full max-w-[1600px] mx-auto px-6 md:px-8 pb-12 pt-28 relative z-10 flex flex-col lg:flex-row gap-6 md:gap-8">
-        {/* Desktop Sidebar (Left) - Sticky */}
-        <div className="hidden lg:block z-20 sticky top-[88px] w-[280px] h-[calc(100vh-120px)] shrink-0">
+      <div className="flex-1 w-full max-w-[1600px] mx-auto px-6 md:px-8 pb-12 pt-28 relative z-10">
+        {/* Desktop Sidebar (Left) - Fixed */}
+        <div className="hidden lg:block z-20 fixed left-6 md:left-8 top-[88px] w-[280px] h-[calc(100vh-120px)]">
           <Sidebar />
         </div>
 
-        {/* Main Workspace Column */}
-        <div className="flex-grow flex flex-col gap-6 md:gap-8 z-10 min-w-0">
+        {/* Main Content with left margin to account for fixed sidebar */}
+        <div className="lg:ml-[304px] flex flex-col gap-6 md:gap-8 z-10">
           {/* Header */}
           <header className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
             <div>

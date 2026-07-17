@@ -2,7 +2,7 @@ import { TransactionCategory } from "@/features/transactions/types/transaction.t
 
 export type BudgetPeriod = "Weekly" | "Monthly" | "Quarterly" | "Yearly" | "Custom";
 
-export type BudgetStatus = "On Track" | "Near Limit" | "Exceeded";
+export type BudgetStatus = "Healthy" | "Watch" | "Warning" | "Exceeded";
 
 export interface IBudget {
   _id: string;

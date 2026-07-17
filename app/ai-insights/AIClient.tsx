@@ -159,9 +159,9 @@ export default function AIClient({ initialData, userName, userEmail, userImage }
       />
 
       {/* Main Grid Layout Container with top padding for fixed navbar */}
-      <div className="flex-1 w-full max-w-[1600px] mx-auto px-6 md:px-8 pb-12 pt-28 relative z-10 flex flex-col lg:flex-row gap-6 md:gap-8">
-        {/* Desktop Sidebar (Left) - Sticky */}
-        <div className="hidden lg:block z-20 sticky top-[88px] w-[280px] h-[calc(100vh-120px)] shrink-0">
+      <div className="flex-1 w-full max-w-[1600px] mx-auto px-6 md:px-8 pb-12 pt-28 relative z-10">
+        {/* Desktop Sidebar (Left) - Fixed */}
+        <div className="hidden lg:block z-20 fixed left-6 md:left-8 top-[88px] w-[280px] h-[calc(100vh-120px)]">
           <Sidebar />
         </div>
 
@@ -181,8 +181,8 @@ export default function AIClient({ initialData, userName, userEmail, userImage }
           </div>
         )}
 
-        {/* Main Workspace Column */}
-        <div className="flex-grow flex flex-col gap-6 md:gap-8 z-10 min-w-0">
+        {/* Main Content with left margin to account for fixed sidebar */}
+        <div className="lg:ml-[304px] flex flex-col gap-6 md:gap-8 z-10">
           <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <button
@@ -212,20 +212,20 @@ export default function AIClient({ initialData, userName, userEmail, userImage }
             {/* PRIMARY: FLOPs Personal Assistant - Full Width */}
             <motion.div variants={itemVariants} className="flex flex-col bg-white border border-[#F6B7CF]/15 rounded-[28px] shadow-sm overflow-hidden h-[540px]">
               {/* Header */}
-              <div className="p-4 border-b border-[#F6B7CF]/10 bg-gradient-to-r from-[#FFF4F8] to-[#F9DCE7]/20 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Brain className="w-5 h-5 text-[#D46A96] animate-pulse" />
-                  <span className="text-sm font-bold text-[#D46A96]">FLOPs Personal Assistant</span>
+              <div className="p-5 border-b border-[#F6B7CF]/10 bg-gradient-to-r from-[#FFF4F8] to-[#F9DCE7]/20 flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <Brain className="w-6 h-6 text-[#D46A96] animate-pulse" />
+                  <span className="text-base font-bold text-[#D46A96]">FLOPs Personal Assistant</span>
                 </div>
-                <span className="text-[10px] text-zinc-400 uppercase tracking-wider">AI Financial Intelligence</span>
+                <span className="text-xs text-zinc-400 uppercase tracking-wider">AI Financial Intelligence</span>
               </div>
 
               {/* Messages body */}
-              <div className="flex-1 p-4 overflow-y-auto flex flex-col gap-3">
+              <div className="flex-1 p-5 overflow-y-auto flex flex-col gap-4">
                 {chatMessages.map((msg, idx) => (
                   <div
                     key={idx}
-                    className={`max-w-[80%] p-3 rounded-2xl text-xs leading-relaxed ${
+                    className={`max-w-[80%] p-4 rounded-2xl text-sm leading-relaxed ${
                       msg.role === "user"
                         ? "bg-zinc-800 text-white self-end rounded-tr-none"
                         : "bg-[#FFF4F8] border border-[#F6B7CF]/10 text-zinc-700 self-start rounded-tl-none"
@@ -235,20 +235,20 @@ export default function AIClient({ initialData, userName, userEmail, userImage }
                   </div>
                 ))}
                 {loading && (
-                  <div className="bg-zinc-100 text-zinc-400 text-xs p-3 rounded-2xl self-start animate-pulse">
+                  <div className="bg-zinc-100 text-zinc-400 text-sm p-4 rounded-2xl self-start animate-pulse">
                     Analyzing your financial data...
                   </div>
                 )}
               </div>
 
               {/* Suggestions triggers */}
-              <div className="px-4 py-2 flex flex-wrap gap-2 border-t border-[#F6B7CF]/10">
+              <div className="px-5 py-3 flex flex-wrap gap-2 border-t border-[#F6B7CF]/10">
                 {suggestedPrompts.map((sug, idx) => (
                   <button
                     key={idx}
                     onClick={() => handleSendMessage(sug)}
                     disabled={loading}
-                    className="text-[10px] font-medium py-1.5 px-3 bg-[#FFF4F8] border border-[#F6B7CF]/20 text-[#D46A96] hover:bg-[#F6B7CF]/10 rounded-full transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="text-xs font-medium py-2 px-4 bg-[#FFF4F8] border border-[#F6B7CF]/20 text-[#D46A96] hover:bg-[#F6B7CF]/10 rounded-full transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     {sug}
                   </button>
@@ -256,7 +256,7 @@ export default function AIClient({ initialData, userName, userEmail, userImage }
               </div>
 
               {/* Input panel */}
-              <div className="p-3 border-t border-[#F6B7CF]/10 flex gap-2">
+              <div className="p-4 border-t border-[#F6B7CF]/10 flex gap-3">
                 <input
                   type="text"
                   value={inputValue}
@@ -264,14 +264,14 @@ export default function AIClient({ initialData, userName, userEmail, userImage }
                   onKeyDown={(e) => e.key === "Enter" && !loading && handleSendMessage(inputValue)}
                   placeholder="Ask about your spending, budgets, or goals..."
                   disabled={loading}
-                  className="flex-grow bg-zinc-50 border border-zinc-200 text-xs py-2 px-4 rounded-full outline-none focus:border-[#D46A96] disabled:opacity-50"
+                  className="flex-grow bg-zinc-50 border border-zinc-200 text-sm py-3 px-5 rounded-xl outline-none focus:border-[#D46A96] disabled:opacity-50"
                 />
                 <button
                   onClick={() => handleSendMessage(inputValue)}
                   disabled={loading || !inputValue.trim()}
-                  className="w-10 h-10 bg-[#D46A96] text-white rounded-full flex items-center justify-center hover:bg-[#d46a96]/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="w-12 h-12 bg-[#D46A96] text-white rounded-xl flex items-center justify-center hover:bg-[#d46a96]/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                  <Send className="w-4 h-4" />
+                  <Send className="w-5 h-5" />
                 </button>
               </div>
             </motion.div>

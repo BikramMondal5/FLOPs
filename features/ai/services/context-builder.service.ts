@@ -50,6 +50,10 @@ export interface FinancialContext {
     spent: number;
     remaining: number;
     utilization: number;
+    status: string;
+    projectedSpend: number;
+    projectedOverspending: number;
+    daysRemaining: number;
   }>;
   goals: Array<{
     name: string;
@@ -163,6 +167,10 @@ export async function buildFinancialContext(
             spent: b.spent,
             remaining: b.remaining,
             utilization: b.progressPercentage,
+            status: b.status,
+            projectedSpend: b.projectedSpend,
+            projectedOverspending: Math.max(0, b.projectedSpend - b.budget.budgetAmount),
+            daysRemaining: b.daysRemaining,
           }))
         : [];
 

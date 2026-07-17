@@ -170,9 +170,9 @@ export default function OverviewClient({ userName, userEmail, userImage }: Overv
       />
 
       {/* Main Grid Layout Container with top padding for fixed navbar */}
-      <div className="flex-1 w-full max-w-[1600px] mx-auto px-6 md:px-8 pb-12 pt-28 relative z-10 flex flex-col lg:flex-row gap-6 md:gap-8">
-        {/* Desktop Sidebar (Left) - Sticky */}
-        <div className="hidden lg:block z-20 sticky top-[88px] w-[280px] h-[calc(100vh-120px)] shrink-0">
+      <div className="flex-1 w-full max-w-[1600px] mx-auto px-6 md:px-8 pb-12 pt-28 relative z-10">
+        {/* Desktop Sidebar (Left) - Fixed */}
+        <div className="hidden lg:block z-20 fixed left-6 md:left-8 top-[88px] w-[280px] h-[calc(100vh-120px)]">
           <Sidebar />
         </div>
 
@@ -192,49 +192,52 @@ export default function OverviewClient({ userName, userEmail, userImage }: Overv
           </div>
         )}
 
-        {/* Main Workspace Column */}
-        <div className="flex-grow flex flex-col gap-6 md:gap-8 z-10 min-w-0">
-          {/* Header */}
-          <header className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="lg:hidden w-10 h-10 bg-white border border-[#F6B7CF]/15 rounded-xl flex items-center justify-center text-[#18181B] shadow-sm hover:bg-[#FFF4F8] transition-colors"
-              >
-                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-              </button>
-              <div className="flex flex-col gap-1.5">
-                <span className="text-[15px] font-medium text-[#6B7280]">Good Morning, {userName} 👋</span>
-                <h1
-                  className="text-4xl md:text-5xl font-normal text-[#18181B] m-0 tracking-tight leading-none"
-                  style={{ fontFamily: "var(--font-heading)" }}
+        {/* Main Content with left margin to account for fixed sidebar */}
+        <div className="lg:ml-[304px] flex flex-col lg:flex-row gap-6 md:gap-8 z-10">
+          {/* Left column - main content */}
+          <div className="flex-1 flex flex-col gap-6 md:gap-8">
+            {/* Header */}
+            <header className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                  className="lg:hidden w-10 h-10 bg-white border border-[#F6B7CF]/15 rounded-xl flex items-center justify-center text-[#18181B] shadow-sm hover:bg-[#FFF4F8] transition-colors"
                 >
-                  Overview
-                </h1>
+                  {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                </button>
+                <div className="flex flex-col gap-1.5">
+                  <span className="text-[15px] font-medium text-[#6B7280]">Good Morning, {userName} 👋</span>
+                  <h1
+                    className="text-4xl md:text-5xl font-normal text-[#18181B] m-0 tracking-tight leading-none"
+                    style={{ fontFamily: "var(--font-heading)" }}
+                  >
+                    Overview
+                  </h1>
+                </div>
               </div>
-            </div>
 
-            <div className="flex items-center gap-3">
-              <button
-                onClick={fetchDashboard}
-                disabled={loadState === "loading"}
-                title="Refresh dashboard"
-                className="w-10 h-10 bg-white border border-[#F6B7CF]/15 rounded-full flex items-center justify-center text-[#18181B] shadow-sm hover:bg-[#FFF4F8] transition-colors disabled:opacity-40"
-              >
-                <RefreshCw className={`w-4 h-4 ${loadState === "loading" ? "animate-spin" : ""}`} />
-              </button>
-              <button className="w-10 h-10 bg-white border border-[#F6B7CF]/15 rounded-full flex items-center justify-center text-[#18181B] shadow-sm hover:bg-[#FFF4F8] transition-colors relative">
-                <Bell className="w-4.5 h-4.5" />
-                <span className="absolute top-2 right-2.5 w-1.5 h-1.5 bg-[#D46A96] rounded-full" />
-              </button>
-            </div>
-          </header>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={fetchDashboard}
+                  disabled={loadState === "loading"}
+                  title="Refresh dashboard"
+                  className="w-10 h-10 bg-white border border-[#F6B7CF]/15 rounded-full flex items-center justify-center text-[#18181B] shadow-sm hover:bg-[#FFF4F8] transition-colors disabled:opacity-40"
+                >
+                  <RefreshCw className={`w-4 h-4 ${loadState === "loading" ? "animate-spin" : ""}`} />
+                </button>
+                <button className="w-10 h-10 bg-white border border-[#F6B7CF]/15 rounded-full flex items-center justify-center text-[#18181B] shadow-sm hover:bg-[#FFF4F8] transition-colors relative">
+                  <Bell className="w-4.5 h-4.5" />
+                  <span className="absolute top-2 right-2.5 w-1.5 h-1.5 bg-[#D46A96] rounded-full" />
+                </button>
+              </div>
+            </header>
 
-          {children}
+            {children}
+          </div>
+
+          {/* Right sidebar panel */}
+          {rightPanel}
         </div>
-
-        {/* Right sidebar */}
-        {rightPanel}
       </div>
 
       {/* ── Modals — mounted always so they can animate in/out ── */}

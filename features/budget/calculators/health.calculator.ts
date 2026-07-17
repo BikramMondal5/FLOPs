@@ -5,7 +5,10 @@ export function calculateBudgetStatus(progressPercentage: number): BudgetStatus 
     return "Exceeded";
   }
   if (progressPercentage >= 80) {
-    return "Near Limit";
+    return "Warning";
   }
-  return "On Track";
+  if (progressPercentage >= 60) {
+    return "Watch";
+  }
+  return "Healthy";
 }

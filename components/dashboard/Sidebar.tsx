@@ -30,7 +30,6 @@ export default function Sidebar({ onCloseMobile }: SidebarProps) {
     { name: "Transactions", icon: Receipt, href: "/transactions" },
     { name: "Budget", icon: PiggyBank, href: "/budget" },
     { name: "Goals", icon: Target, href: "/goals" },
-    { name: "Analytics", icon: BarChart3, href: "/overview" },
     { name: "AI Insights", icon: Brain, href: "/ai-insights" },
     { name: "Profile", icon: Settings, href: "/profile" },
   ];

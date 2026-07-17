@@ -208,9 +208,9 @@ export default function GoalsClient({ initialData, userName, userEmail, userImag
       />
 
       {/* Main Grid Layout Container with top padding for fixed navbar */}
-      <div className="flex-1 w-full max-w-[1600px] mx-auto px-6 md:px-8 pb-12 pt-28 relative z-10 flex flex-col lg:flex-row gap-6 md:gap-8">
-        {/* Desktop Sidebar (Left) - Sticky */}
-        <div className="hidden lg:block z-20 sticky top-[88px] w-[280px] h-[calc(100vh-120px)] shrink-0">
+      <div className="flex-1 w-full max-w-[1600px] mx-auto px-6 md:px-8 pb-12 pt-28 relative z-10">
+        {/* Desktop Sidebar (Left) - Fixed */}
+        <div className="hidden lg:block z-20 fixed left-6 md:left-8 top-[88px] w-[280px] h-[calc(100vh-120px)]">
           <Sidebar />
         </div>
 
@@ -230,34 +230,36 @@ export default function GoalsClient({ initialData, userName, userEmail, userImag
           </div>
         )}
 
-        {/* Main Workspace Column */}
-        <div className="flex-grow flex flex-col gap-6 md:gap-8 z-10 min-w-0">
-          {/* Header Panel */}
-          <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="lg:hidden w-10 h-10 bg-white border border-[#F6B7CF]/15 rounded-xl flex items-center justify-center text-[#18181B]"
-              >
-                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-              </button>
+        {/* Main Content with left margin to account for fixed sidebar */}
+        <div className="lg:ml-[304px] flex flex-col lg:flex-row gap-6 md:gap-8 z-10">
+          {/* Left column - main content */}
+          <div className="flex-1 flex flex-col gap-6 md:gap-8">
+            {/* Header Panel */}
+            <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                  className="lg:hidden w-10 h-10 bg-white border border-[#F6B7CF]/15 rounded-xl flex items-center justify-center text-[#18181B]"
+                >
+                  {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                </button>
 
-              <div>
-                <h1 className="text-4xl md:text-5xl font-normal text-[#18181B] m-0 tracking-tight leading-none">
-                  Financial Goals
-                </h1>
-                <p className="text-[13px] text-[#6B7280] mt-1.5 m-0 max-w-[420px]">
-                  Track progress, health status and timelines dynamically driven by Savings Engine.
-                </p>
+                <div>
+                  <h1 className="text-4xl md:text-5xl font-normal text-[#18181B] m-0 tracking-tight leading-none">
+                    Financial Goals
+                  </h1>
+                  <p className="text-[13px] text-[#6B7280] mt-1.5 m-0 max-w-[420px]">
+                    Track progress, health status and timelines dynamically driven by Savings Engine.
+                  </p>
+                </div>
               </div>
-            </div>
 
-            <button
-              onClick={() => setCreateModalOpen(true)}
-              className="text-xs font-semibold py-2.5 px-4 bg-[#18181B] text-white hover:bg-zinc-800 rounded-full flex items-center gap-1 transition-colors cursor-pointer"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Create Goal</span>
+              <button
+                onClick={() => setCreateModalOpen(true)}
+                className="text-xs font-semibold py-2.5 px-4 bg-[#18181B] text-white hover:bg-zinc-800 rounded-full flex items-center gap-1 transition-colors cursor-pointer"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Create Goal</span>
             </button>
           </header>
 
@@ -337,10 +339,10 @@ export default function GoalsClient({ initialData, userName, userEmail, userImag
               </motion.div>
             </motion.main>
           )}
-        </div>
+          </div>
 
-        {/* Right sticky sidebar recommendations */}
-        <div className="w-full lg:w-[360px] shrink-0 z-10 flex flex-col gap-6 md:gap-8">
+          {/* Right sidebar - Goal Recommendations */}
+          <div className="w-full lg:w-[360px] shrink-0 z-10 flex flex-col gap-6 md:gap-8">
           
           {/* Smart Savings recommendations */}
           <div className="p-6 bg-white border border-[#F6B7CF]/15 rounded-[24px] shadow-sm flex flex-col">
@@ -362,6 +364,8 @@ export default function GoalsClient({ initialData, userName, userEmail, userImag
               )}
             </div>
           </div>
+
+        </div>
 
         </div>
 
