@@ -64,14 +64,14 @@ export default async function AccountsPage() {
       />
 
       {/* Main Layout with top padding for fixed navbar */}
-      <div className="flex-1 flex flex-col lg:flex-row p-6 md:p-8 gap-6 md:gap-8 relative z-10 pt-28">
+      <div className="flex-1 w-full px-4 sm:px-6 lg:px-8 xl:px-12 pb-12 pt-28 relative z-10">
         {/* Desktop Sidebar — fixed */}
-        <div className="hidden lg:block z-20 fixed left-6 md:left-8 top-[96px] w-[280px] h-[calc(100vh-128px)]">
+        <div className="hidden lg:block z-20 fixed left-6 md:left-8 xl:left-12 top-[88px] w-[280px] h-[calc(100vh-120px)]">
           <Sidebar />
         </div>
 
         {/* Main workspace */}
-        <div className="flex-1 flex flex-col gap-6 md:gap-8 z-10 lg:pl-[304px]">
+        <div className="lg:ml-[304px] flex flex-col gap-6 md:gap-8 z-10">
           {/* Page header */}
           <header className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
             <div>

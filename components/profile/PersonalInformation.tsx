@@ -1,27 +1,79 @@
 "use client";
 
-import { useState } from "react";
-import { User, Mail, Phone, Calendar, Map, Briefcase, DollarSign, Languages, Sparkles } from "lucide-react";
+import { useState, useEffect } from "react";
+import { User } from "lucide-react";
+import type { FullProfileDTO } from "@/features/profile/dto/profile.dto";
 
-export default function PersonalInformation() {
+interface PersonalInformationProps {
+  profile: FullProfileDTO;
+  onUpdate: (updates: any) => Promise<void>;
+}
+
+export default function PersonalInformation({ profile, onUpdate }: PersonalInformationProps) {
+  const { profile: userProfile } = profile;
+  
   const [formData, setFormData] = useState({
-    fullName: "Bikram Mondal",
-    email: "bikram.mondal@flops.io",
-    phone: "+91 98765 43210",
-    dob: "1998-04-20",
-    country: "India",
-    city: "Kolkata",
-    occupation: "Software Architect",
-    currency: "INR (₹)",
-    language: "English",
+    name: userProfile.name || "",
+    email: userProfile.email || "",
+    phone: userProfile.phone || "",
+    dateOfBirth: userProfile.dateOfBirth || "",
+    country: userProfile.country || "",
+    city: userProfile.city || "",
+    currency: userProfile.currency || "",
+    language: userProfile.language || "",
+    timezone: userProfile.timezone || "",
   });
 
-  const handleSave = () => {
-    alert("Profile changes saved successfully!");
+  const [originalData, setOriginalData] = useState(formData);
+  const [isDirty, setIsDirty] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Update isDirty state when formData changes
+  useEffect(() => {
+    const hasChanges = JSON.stringify(formData) !== JSON.stringify(originalData);
+    setIsDirty(hasChanges);
+  }, [formData, originalData]);
+
+  // Update formData when profile changes
+  useEffect(() => {
+    const newData = {
+      name: userProfile.name || "",
+      email: userProfile.email || "",
+      phone: userProfile.phone || "",
+      dateOfBirth: userProfile.dateOfBirth || "",
+      country: userProfile.country || "",
+      city: userProfile.city || "",
+      currency: userProfile.currency || "",
+      language: userProfile.language || "",
+      timezone: userProfile.timezone || "",
+    };
+    setFormData(newData);
+    setOriginalData(newData);
+  }, [userProfile]);
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      await onUpdate({
+        name: formData.name,
+        phone: formData.phone,
+        dateOfBirth: formData.dateOfBirth,
+        country: formData.country,
+        city: formData.city,
+        currency: formData.currency,
+        language: formData.language,
+        timezone: formData.timezone,
+      });
+      setOriginalData(formData);
+      setIsDirty(false);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleCancel = () => {
-    alert("Resetting fields...");
+    setFormData(originalData);
+    setIsDirty(false);
   };
 
   return (
@@ -41,8 +93,8 @@ export default function PersonalInformation() {
             <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wide">Full Name</label>
             <input
               type="text"
-              value={formData.fullName}
-              onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               className="text-xs text-[#18181B] bg-white border border-[#F6B7CF]/15 rounded-xl px-3.5 py-3 outline-none focus:border-[#F6B7CF]/40 transition-colors"
             />
           </div>
@@ -51,8 +103,8 @@ export default function PersonalInformation() {
             <input
               type="email"
               value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="text-xs text-[#18181B] bg-white border border-[#F6B7CF]/15 rounded-xl px-3.5 py-3 outline-none focus:border-[#F6B7CF]/40 transition-colors"
+              disabled
+              className="text-xs text-[#18181B] bg-zinc-50 border border-[#F6B7CF]/15 rounded-xl px-3.5 py-3 outline-none cursor-not-allowed opacity-60"
             />
           </div>
         </div>
@@ -71,8 +123,8 @@ export default function PersonalInformation() {
             <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wide">Date of Birth</label>
             <input
               type="date"
-              value={formData.dob}
-              onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
+              value={formData.dateOfBirth}
+              onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
               className="text-xs text-[#18181B] bg-white border border-[#F6B7CF]/15 rounded-xl px-3.5 py-3 outline-none focus:border-[#F6B7CF]/40 transition-colors"
             />
           </div>
@@ -101,15 +153,6 @@ export default function PersonalInformation() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="flex flex-col gap-1.5">
-            <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wide">Occupation</label>
-            <input
-              type="text"
-              value={formData.occupation}
-              onChange={(e) => setFormData({ ...formData, occupation: e.target.value })}
-              className="text-xs text-[#18181B] bg-white border border-[#F6B7CF]/15 rounded-xl px-3.5 py-3 outline-none focus:border-[#F6B7CF]/40 transition-colors"
-            />
-          </div>
-          <div className="flex flex-col gap-1.5">
             <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wide">Preferred Currency</label>
             <input
               type="text"
@@ -127,6 +170,15 @@ export default function PersonalInformation() {
               className="text-xs text-[#18181B] bg-white border border-[#F6B7CF]/15 rounded-xl px-3.5 py-3 outline-none focus:border-[#F6B7CF]/40 transition-colors"
             />
           </div>
+          <div className="flex flex-col gap-1.5">
+            <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wide">Timezone</label>
+            <input
+              type="text"
+              value={formData.timezone}
+              onChange={(e) => setFormData({ ...formData, timezone: e.target.value })}
+              className="text-xs text-[#18181B] bg-white border border-[#F6B7CF]/15 rounded-xl px-3.5 py-3 outline-none focus:border-[#F6B7CF]/40 transition-colors"
+            />
+          </div>
         </div>
       </div>
 
@@ -134,15 +186,17 @@ export default function PersonalInformation() {
       <div className="flex justify-end gap-2.5 mt-5 border-t border-zinc-100 pt-4 shrink-0">
         <button
           onClick={handleCancel}
-          className="text-xs font-semibold py-2.5 px-4 border border-[#F6B7CF]/30 text-[#D46A96] hover:bg-[#FFF4F8] rounded-full transition-colors cursor-pointer"
+          disabled={!isDirty || isSaving}
+          className="text-xs font-semibold py-2.5 px-4 border border-[#F6B7CF]/30 text-[#D46A96] hover:bg-[#FFF4F8] rounded-full transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Cancel
         </button>
         <button
           onClick={handleSave}
-          className="text-xs font-semibold py-2.5 px-5 bg-[#18181B] text-white hover:bg-zinc-800 rounded-full transition-colors cursor-pointer"
+          disabled={!isDirty || isSaving}
+          className="text-xs font-semibold py-2.5 px-5 bg-[#18181B] text-white hover:bg-zinc-800 rounded-full transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Save Changes
+          {isSaving ? "Saving..." : "Save Changes"}
         </button>
       </div>
 

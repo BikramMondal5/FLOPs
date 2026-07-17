@@ -74,7 +74,7 @@ export default function Navbar({ userInfo, ctaText = "Get Started", ctaHref = "/
       style={{ height: "72px" }}
     >
       <div
-        className="mx-auto flex w-full h-full items-center justify-between px-6 xl:px-0"
+        className="mx-auto flex w-full h-full items-center justify-between px-4 sm:px-6 xl:px-0"
         style={{ maxWidth: "1200px" }}
       >
         {/* Logo */}

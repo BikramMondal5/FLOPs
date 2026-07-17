@@ -1,19 +1,38 @@
 "use client";
 
 import { Bell, ToggleLeft, ToggleRight } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import type { FullProfileDTO } from "@/features/profile/dto/profile.dto";
 
-export default function NotificationPreferences() {
-  const [prefs, setPrefs] = useState({
-    budgetAlerts: true,
-    goalReminders: true,
-    monthlyReports: true,
-    aiRecommendations: false,
-    securityAlerts: true,
-  });
+interface NotificationPreferencesProps {
+  profile: FullProfileDTO;
+  onUpdate: (updates: any) => Promise<void>;
+}
 
-  const toggle = (key: keyof typeof prefs) => {
-    setPrefs((prev) => ({ ...prev, [key]: !prev[key] }));
+export default function NotificationPreferences({ profile, onUpdate }: NotificationPreferencesProps) {
+  const { preferences } = profile;
+  const [prefs, setPrefs] = useState(preferences.notifications);
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  useEffect(() => {
+    setPrefs(preferences.notifications);
+  }, [preferences.notifications]);
+
+  const toggle = async (key: keyof typeof prefs) => {
+    const newValue = !prefs[key];
+    setPrefs((prev) => ({ ...prev, [key]: newValue }));
+    
+    setIsUpdating(true);
+    try {
+      await onUpdate({
+        notifications: {
+          ...prefs,
+          [key]: newValue,
+        },
+      });
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   return (
@@ -30,7 +49,7 @@ export default function NotificationPreferences() {
             <span className="font-semibold text-zinc-700 block">Budget Threshold Alerts</span>
             <span className="text-[10px] text-zinc-400">Get notified when categories exceed 85% limits</span>
           </div>
-          <button onClick={() => toggle("budgetAlerts")} className="cursor-pointer">
+          <button onClick={() => toggle("budgetAlerts")} className="cursor-pointer" disabled={isUpdating}>
             {prefs.budgetAlerts ? <ToggleRight className="w-9 h-9 text-[#D46A96]" /> : <ToggleLeft className="w-9 h-9 text-zinc-300" />}
           </button>
         </div>
@@ -41,8 +60,8 @@ export default function NotificationPreferences() {
             <span className="font-semibold text-zinc-700 block">Goal Savings Reminders</span>
             <span className="text-[10px] text-zinc-400">Weekly targets progress timeline checkpoints</span>
           </div>
-          <button onClick={() => toggle("goalReminders")} className="cursor-pointer">
-            {prefs.goalReminders ? <ToggleRight className="w-9 h-9 text-[#D46A96]" /> : <ToggleLeft className="w-9 h-9 text-zinc-300" />}
+          <button onClick={() => toggle("goalAlerts")} className="cursor-pointer" disabled={isUpdating}>
+            {prefs.goalAlerts ? <ToggleRight className="w-9 h-9 text-[#D46A96]" /> : <ToggleLeft className="w-9 h-9 text-zinc-300" />}
           </button>
         </div>
 
@@ -52,8 +71,8 @@ export default function NotificationPreferences() {
             <span className="font-semibold text-zinc-700 block">Monthly Financial Reports</span>
             <span className="text-[10px] text-zinc-400">Receive detailed PDF digest on month-end close</span>
           </div>
-          <button onClick={() => toggle("monthlyReports")} className="cursor-pointer">
-            {prefs.monthlyReports ? <ToggleRight className="w-9 h-9 text-[#D46A96]" /> : <ToggleLeft className="w-9 h-9 text-zinc-300" />}
+          <button onClick={() => toggle("reportAlerts")} className="cursor-pointer" disabled={isUpdating}>
+            {prefs.reportAlerts ? <ToggleRight className="w-9 h-9 text-[#D46A96]" /> : <ToggleLeft className="w-9 h-9 text-zinc-300" />}
           </button>
         </div>
 
@@ -63,8 +82,8 @@ export default function NotificationPreferences() {
             <span className="font-semibold text-zinc-700 block">AI Intelligence Prompts</span>
             <span className="text-[10px] text-zinc-400">Notify me about subscription leaks instantly</span>
           </div>
-          <button onClick={() => toggle("aiRecommendations")} className="cursor-pointer">
-            {prefs.aiRecommendations ? <ToggleRight className="w-9 h-9 text-[#D46A96]" /> : <ToggleLeft className="w-9 h-9 text-zinc-300" />}
+          <button onClick={() => toggle("aiAlerts")} className="cursor-pointer" disabled={isUpdating}>
+            {prefs.aiAlerts ? <ToggleRight className="w-9 h-9 text-[#D46A96]" /> : <ToggleLeft className="w-9 h-9 text-zinc-300" />}
           </button>
         </div>
 
@@ -74,7 +93,7 @@ export default function NotificationPreferences() {
             <span className="font-semibold text-zinc-700 block">Security Log Alerts</span>
             <span className="text-[10px] text-zinc-400">Notify on active device logins and 2FA sweeps</span>
           </div>
-          <button onClick={() => toggle("securityAlerts")} className="cursor-pointer">
+          <button onClick={() => toggle("securityAlerts")} className="cursor-pointer" disabled={isUpdating}>
             {prefs.securityAlerts ? <ToggleRight className="w-9 h-9 text-[#D46A96]" /> : <ToggleLeft className="w-9 h-9 text-zinc-300" />}
           </button>
         </div>

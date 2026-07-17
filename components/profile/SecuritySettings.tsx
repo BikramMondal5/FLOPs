@@ -1,10 +1,16 @@
 "use client";
 
-import { ShieldAlert, Key, ToggleLeft, ToggleRight, Laptop, Smartphone } from "lucide-react";
+import { ShieldAlert, ToggleLeft, ToggleRight } from "lucide-react";
 import { useState } from "react";
+import type { FullProfileDTO } from "@/features/profile/dto/profile.dto";
 
-export default function SecuritySettings() {
-  const [tfa, setTfa] = useState(true);
+interface SecuritySettingsProps {
+  profile: FullProfileDTO;
+}
+
+export default function SecuritySettings({ profile }: SecuritySettingsProps) {
+  const { profile: userProfile } = profile;
+  const [tfa, setTfa] = useState(false);
 
   return (
     <div className="p-6 bg-white border border-[#F6B7CF]/15 rounded-[24px] shadow-[0_12px_40px_rgba(0,0,0,0.03)] flex flex-col justify-between">
@@ -17,11 +23,9 @@ export default function SecuritySettings() {
         {/* Verification metrics status */}
         <div className="flex justify-between items-center text-xs pb-3 border-b border-zinc-100">
           <span className="text-[#6B7280]">Email Verification Status</span>
-          <span className="font-bold text-emerald-600">Verified</span>
-        </div>
-        <div className="flex justify-between items-center text-xs pb-3 border-b border-zinc-100">
-          <span className="text-[#6B7280]">Phone Verification Status</span>
-          <span className="font-bold text-emerald-600">Verified</span>
+          <span className={`font-bold ${userProfile.emailVerified ? "text-emerald-600" : "text-amber-600"}`}>
+            {userProfile.emailVerified ? "Verified" : "Pending"}
+          </span>
         </div>
 
         {/* 2FA toggler */}
@@ -39,28 +43,12 @@ export default function SecuritySettings() {
           </button>
         </div>
 
-        {/* Active devices log */}
+        {/* Current Session Info */}
         <div className="mt-2">
-          <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wide block mb-3">Active Device Sessions</span>
-          <div className="flex flex-col gap-3">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-zinc-50 border border-zinc-100 flex items-center justify-center text-zinc-500 shrink-0">
-                <Laptop className="w-4.5 h-4.5" />
-              </div>
-              <div>
-                <span className="text-[12px] font-semibold text-[#18181B] block">Windows 11 PC • Kolkata, India</span>
-                <span className="text-[9.5px] text-[#6B7280]">Chrome Browser • Current session</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-zinc-50 border border-zinc-100 flex items-center justify-center text-zinc-500 shrink-0">
-                <Smartphone className="w-4.5 h-4.5" />
-              </div>
-              <div>
-                <span className="text-[12px] font-semibold text-[#18181B] block">Apple iPhone 15 Pro</span>
-                <span className="text-[9.5px] text-[#6B7280]">FLOPs iOS App • Active 3 hours ago</span>
-              </div>
-            </div>
+          <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wide block mb-3">Current Session</span>
+          <div className="p-3.5 bg-zinc-50/50 border border-zinc-100 rounded-xl">
+            <span className="text-[12px] font-semibold text-[#18181B] block">Active Session</span>
+            <span className="text-[9.5px] text-[#6B7280]">You are currently logged in</span>
           </div>
         </div>
       </div>
@@ -72,12 +60,6 @@ export default function SecuritySettings() {
           className="text-xs font-semibold py-2.5 px-4 border border-[#F6B7CF]/30 text-[#D46A96] hover:bg-[#FFF4F8] rounded-full cursor-pointer"
         >
           Change Password
-        </button>
-        <button
-          onClick={() => alert("2FA setup configuration generated (Mock).")}
-          className="text-xs font-semibold py-2.5 px-4 bg-[#18181B] text-white hover:bg-zinc-800 rounded-full cursor-pointer"
-        >
-          Manage Devices
         </button>
       </div>
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Bell,
@@ -28,7 +29,39 @@ export default function NotificationDrawer({ isOpen, onClose }: NotificationDraw
   const [notifications, setNotifications] = useState<NotificationDTO[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const router = useRouter();
+
+  // Handle mounting for portal
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
+
+  // Prevent body scroll when drawer is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
+  // Handle ESC key
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isOpen) {
+        onClose();
+      }
+    };
+
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, [isOpen, onClose]);
 
   const fetchNotifications = async () => {
     setIsLoading(true);
@@ -123,7 +156,9 @@ export default function NotificationDrawer({ isOpen, onClose }: NotificationDraw
     return "Just now";
   };
 
-  return (
+  if (!mounted) return null;
+
+  const drawerContent = (
     <AnimatePresence>
       {isOpen && (
         <>
@@ -133,7 +168,7 @@ export default function NotificationDrawer({ isOpen, onClose }: NotificationDraw
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50"
+            className="fixed inset-0 bg-black/30 backdrop-blur-sm z-[100]"
           />
 
           {/* Drawer */}
@@ -142,7 +177,7 @@ export default function NotificationDrawer({ isOpen, onClose }: NotificationDraw
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 30, stiffness: 300 }}
-            className="fixed right-0 top-0 bottom-0 w-full sm:w-[420px] bg-white shadow-2xl z-50 flex flex-col"
+            className="fixed right-0 top-0 bottom-0 w-full sm:w-[420px] bg-white shadow-2xl z-[100] flex flex-col"
           >
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-zinc-200">
@@ -228,4 +263,6 @@ export default function NotificationDrawer({ isOpen, onClose }: NotificationDraw
       )}
     </AnimatePresence>
   );
+
+  return createPortal(drawerContent, document.body);
 }

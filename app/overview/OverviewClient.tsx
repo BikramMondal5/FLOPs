@@ -170,9 +170,9 @@ export default function OverviewClient({ userName, userEmail, userImage }: Overv
       />
 
       {/* Main Grid Layout Container with top padding for fixed navbar */}
-      <div className="flex-1 w-full max-w-[1600px] mx-auto px-6 md:px-8 pb-12 pt-28 relative z-10">
+      <div className="flex-1 w-full px-4 sm:px-6 lg:px-8 xl:px-12 pb-12 pt-28 relative z-10">
         {/* Desktop Sidebar (Left) - Fixed */}
-        <div className="hidden lg:block z-20 fixed left-6 md:left-8 top-[88px] w-[280px] h-[calc(100vh-120px)]">
+        <div className="hidden lg:block z-20 fixed left-6 md:left-8 xl:left-12 top-[88px] w-[280px] h-[calc(100vh-120px)]">
           <Sidebar />
         </div>
 
