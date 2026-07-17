@@ -33,8 +33,8 @@ export interface AccountAssetDistributionItem {
 }
 
 export interface HealthScoreDTO {
-  score: number; // 0 - 100
-  rating: "Excellent" | "Good" | "Average" | "Needs Attention";
+  score: number | null; // 0 - 100, or null when insufficient data
+  rating: "Excellent" | "Good" | "Average" | "Needs Attention" | "No Data";
   savingsRate: number;
   incomeExpenseRatio: number;
   burnRate: number; // Avg monthly burn

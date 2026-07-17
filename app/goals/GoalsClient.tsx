@@ -206,9 +206,9 @@ export default function GoalsClient({ initialData, userName }: GoalsClientProps)
       <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full pointer-events-none z-0 bg-radial from-[#F6B7CF]/10 to-transparent filter blur-[120px]" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[55vw] h-[55vw] rounded-full pointer-events-none z-0 bg-radial from-[#F9DCE7]/15 to-transparent filter blur-[140px]" />
 
-      {/* Navbar */}
+      {/* Navbar - Fixed */}
       <nav
-        className="sticky top-0 z-30 mx-auto flex w-full items-center justify-between px-6 md:px-8 border-b border-[#F6B7CF]/10 bg-[#FCFCFD]/80 backdrop-blur-md shrink-0"
+        className="fixed top-0 left-0 right-0 z-30 flex w-full items-center justify-between px-6 md:px-8 border-b border-[#F6B7CF]/10 bg-[#FCFCFD]/80 backdrop-blur-md shrink-0"
         style={{ height: "72px" }}
       >
         <Link href="/" className="flex items-center gap-2 no-underline z-10 relative">
@@ -239,8 +239,8 @@ export default function GoalsClient({ initialData, userName }: GoalsClientProps)
         </div>
       </nav>
 
-      {/* Main Grid Workspace */}
-      <div className="flex-1 flex flex-col lg:flex-row p-6 md:p-8 gap-6 md:gap-8 relative z-10">
+      {/* Main Grid Workspace with top padding for fixed navbar */}
+      <div className="flex-1 flex flex-col lg:flex-row p-6 md:p-8 gap-6 md:gap-8 relative z-10 pt-[96px]">
         
         {/* Sidebar */}
         <div className="hidden lg:block z-20 fixed left-6 md:left-8 top-[96px] w-[280px] h-[calc(100vh-128px)]">

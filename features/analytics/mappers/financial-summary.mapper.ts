@@ -72,7 +72,8 @@ export function mapRawDashboardToDTO(
     summaryRaw.totalIncome,
     summaryRaw.totalExpense,
     summaryMath.savingsRate,
-    accounts.length
+    accounts.length,
+    summaryRaw.count
   );
 
   // 6. Insights

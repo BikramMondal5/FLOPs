@@ -168,9 +168,9 @@ export default function OverviewClient({ userName }: OverviewClientProps) {
       <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full pointer-events-none z-0 bg-radial from-[#F6B7CF]/10 to-transparent filter blur-[120px]" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[55vw] h-[55vw] rounded-full pointer-events-none z-0 bg-radial from-[#F9DCE7]/15 to-transparent filter blur-[140px]" />
 
-      {/* Top Navbar */}
+      {/* Top Navbar - Fixed */}
       <nav
-        className="sticky top-0 z-30 mx-auto flex w-full items-center justify-between px-6 md:px-8 border-b border-[#F6B7CF]/10 bg-[#FCFCFD]/80 backdrop-blur-md shrink-0"
+        className="fixed top-0 left-0 right-0 z-30 flex w-full items-center justify-between px-6 md:px-8 border-b border-[#F6B7CF]/10 bg-[#FCFCFD]/80 backdrop-blur-md shrink-0"
         style={{ height: "72px" }}
       >
         <Link href="/" className="flex items-center gap-2 no-underline z-10 relative">
@@ -207,8 +207,8 @@ export default function OverviewClient({ userName }: OverviewClientProps) {
         </div>
       </nav>
 
-      {/* Main Grid */}
-      <div className="flex-1 flex flex-col lg:flex-row p-6 md:p-8 gap-6 md:gap-8 relative z-10">
+      {/* Main Grid with top padding for fixed navbar */}
+      <div className="flex-1 flex flex-col lg:flex-row p-6 md:p-8 gap-6 md:gap-8 relative z-10 pt-[96px]">
         {/* Left Sidebar */}
         <div className="hidden lg:block z-20 fixed left-6 md:left-8 top-[96px] w-[280px] h-[calc(100vh-128px)]">
           <Sidebar />
@@ -350,24 +350,40 @@ export default function OverviewClient({ userName }: OverviewClientProps) {
           <h3 className="text-base font-semibold text-[#18181B] m-0">Financial Health Score</h3>
           <p className="text-[11px] text-[#6B7280] mt-0.5 m-0">Engine Calculated Health index</p>
         </div>
-        <div className="flex items-center gap-5 mt-2">
-          <div className="relative w-20 h-20 rounded-full border-4 border-[#FFF4F8] flex items-center justify-center bg-[#FFF4F8]/30">
-            <span className="text-2xl font-black text-[#D46A96]">{data!.health.score}</span>
-          </div>
-          <div>
-            <span className="text-[11px] uppercase font-bold text-zinc-400">Score Rating</span>
-            <h4 className="text-base font-bold text-[#18181B] m-0">{data!.health.rating}</h4>
-          </div>
-        </div>
-        <hr className="border-[#F6B7CF]/10 my-4" />
-        <div className="flex flex-col gap-3">
-          {data!.health.healthInsights.map((insightText, idx) => (
-            <div key={idx} className="flex gap-2 items-start text-xs text-zinc-600">
-              <ShieldCheck className="w-4 h-4 text-[#D46A96] shrink-0 mt-0.5" />
-              <span>{insightText}</span>
+        
+        {data!.health.score === null ? (
+          // Empty state for insufficient data
+          <div className="flex flex-col items-center justify-center py-6 text-center">
+            <div className="w-16 h-16 rounded-full border-4 border-[#FFF4F8] flex items-center justify-center bg-[#FFF4F8]/30 mb-4">
+              <span className="text-3xl font-black text-[#D46A96]">—</span>
             </div>
-          ))}
-        </div>
+            <h4 className="text-sm font-bold text-[#18181B] m-0 mb-2">Let&apos;s get started!</h4>
+            <p className="text-xs text-[#6B7280] leading-relaxed max-w-[280px]">
+              Create your first account and add transactions to receive a personalized financial health score.
+            </p>
+          </div>
+        ) : (
+          <>
+            <div className="flex items-center gap-5 mt-2">
+              <div className="relative w-20 h-20 rounded-full border-4 border-[#FFF4F8] flex items-center justify-center bg-[#FFF4F8]/30">
+                <span className="text-2xl font-black text-[#D46A96]">{data!.health.score}</span>
+              </div>
+              <div>
+                <span className="text-[11px] uppercase font-bold text-zinc-400">Score Rating</span>
+                <h4 className="text-base font-bold text-[#18181B] m-0">{data!.health.rating}</h4>
+              </div>
+            </div>
+            <hr className="border-[#F6B7CF]/10 my-4" />
+            <div className="flex flex-col gap-3">
+              {data!.health.healthInsights.map((insightText, idx) => (
+                <div key={idx} className="flex gap-2 items-start text-xs text-zinc-600">
+                  <ShieldCheck className="w-4 h-4 text-[#D46A96] shrink-0 mt-0.5" />
+                  <span>{insightText}</span>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
       </div>
 
       {/* Rule-Based Insights */}

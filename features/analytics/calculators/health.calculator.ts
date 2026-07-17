@@ -4,8 +4,26 @@ export function calculateHealthScore(
   totalIncome: number,
   totalExpense: number,
   savingsRate: number,
-  accountsCount: number
+  accountsCount: number,
+  transactionCount?: number
 ): HealthScoreDTO {
+  // Check if there's insufficient data for meaningful calculation
+  const hasInsufficientData = 
+    accountsCount === 0 || 
+    (transactionCount !== undefined && transactionCount === 0) ||
+    (totalIncome === 0 && totalExpense === 0);
+
+  if (hasInsufficientData) {
+    return {
+      score: null,
+      rating: "No Data",
+      savingsRate: 0,
+      incomeExpenseRatio: 0,
+      burnRate: 0,
+      healthInsights: [],
+    };
+  }
+
   let score = 50; // base score
 
   // 1. Savings Rate weight (max 30 points)

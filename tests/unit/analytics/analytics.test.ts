@@ -79,7 +79,7 @@ describe('Analytics Engine - Calculators', () => {
 
   describe('calculateHealthScore', () => {
     test('evaluates score and rating appropriately', () => {
-      const res = calculateHealthScore(100000, 40000, 60, 4);
+      const res = calculateHealthScore(100000, 40000, 60, 4, 10);
       expect(res).toEqual({
         score: 100,
         rating: 'Excellent',
@@ -94,7 +94,7 @@ describe('Analytics Engine - Calculators', () => {
     });
 
     test('penalizes deficit spending', () => {
-      const res = calculateHealthScore(10000, 50000, -400, 1);
+      const res = calculateHealthScore(10000, 50000, -400, 1, 5);
       expect(res).toEqual({
         score: 37,
         rating: 'Needs Attention',
@@ -110,10 +110,10 @@ describe('Analytics Engine - Calculators', () => {
     });
 
     test('handles moderate values and low accounts count', () => {
-      const res = calculateHealthScore(50000, 40000, 5, 0);
+      const res = calculateHealthScore(50000, 40000, 5, 1, 3);
       expect(res).toEqual({
-        score: 63,
-        rating: 'Average',
+        score: 66,
+        rating: 'Good',
         savingsRate: 5,
         incomeExpenseRatio: 1.25,
         burnRate: 40000,
@@ -121,6 +121,18 @@ describe('Analytics Engine - Calculators', () => {
           'Your savings rate is low. Try trimming shopping or entertainment expenses.',
           'Tip: Create a separate cash wallet or savings account for better tracking.'
         ]
+      });
+    });
+
+    test('returns No Data state when insufficient data', () => {
+      const res = calculateHealthScore(0, 0, 0, 0, 0);
+      expect(res).toEqual({
+        score: null,
+        rating: 'No Data',
+        savingsRate: 0,
+        incomeExpenseRatio: 0,
+        burnRate: 0,
+        healthInsights: []
       });
     });
   });
