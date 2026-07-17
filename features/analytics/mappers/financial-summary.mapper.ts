@@ -2,6 +2,7 @@ import type { RawSummaryAggregation, RawCategoryAggregation, RawMonthlyAggregati
 import type { CategoryBreakdownItem, MonthlyTrendItem, AccountAssetDistributionItem, FinancialDashboardDTO } from "../dto/dashboard.dto";
 import type { AccountDTO } from "@/features/accounts/types/account.types";
 import type { TransactionDTO } from "@/features/transactions/types/transaction.types";
+import type { TrendsData } from "../calculators/trends.calculator";
 import { calculateSummary } from "../calculators/summary.calculator";
 import { calculateCategories } from "../calculators/category.calculator";
 import { calculateHealthScore } from "../calculators/health.calculator";
@@ -19,7 +20,8 @@ export function mapRawDashboardToDTO(
   categoriesRaw: RawCategoryAggregation[],
   monthlyRaw: RawMonthlyAggregation[],
   sparklinePoints: number[],
-  daysCount: number
+  daysCount: number,
+  trends?: TrendsData
 ): FinancialDashboardDTO {
   // 1. Calculate assets & distribution
   const totalBalance = accounts.reduce((acc, a) => acc + a.balance, 0);
@@ -112,5 +114,6 @@ export function mapRawDashboardToDTO(
     recentTransactions,
     health,
     insights,
+    trends: trends ?? { weekly: [], monthly: [], yearly: [] },
   };
 }

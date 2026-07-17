@@ -1,4 +1,5 @@
 import type { TransactionDTO } from "@/features/transactions/types/transaction.types";
+import type { TrendDataPoint } from "@/features/analytics/calculators/trends.calculator";
 
 export interface CategoryBreakdownItem {
   category: string;
@@ -68,4 +69,9 @@ export interface FinancialDashboardDTO {
   recentTransactions: TransactionDTO[];
   health: HealthScoreDTO;
   insights: RuleInsightDTO[];
+  trends: {
+    weekly: TrendDataPoint[];
+    monthly: TrendDataPoint[];
+    yearly: TrendDataPoint[];
+  };
 }

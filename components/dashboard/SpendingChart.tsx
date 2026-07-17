@@ -3,37 +3,14 @@
 import { useState, useEffect } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import type { MonthlyTrendItem } from "@/features/analytics/dto/dashboard.dto";
+import type { TrendsData } from "@/features/analytics/calculators/trends.calculator";
 
 interface SpendingChartProps {
   monthlyTrends: MonthlyTrendItem[];
-  weeklyMock?: { name: string; Spending: number }[];
-  yearlyMock?: { name: string; Spending: number }[];
+  trends?: TrendsData;
 }
 
-const defaultWeekly = [
-  { name: "Mon", Spending: 1200 },
-  { name: "Tue", Spending: 2800 },
-  { name: "Wed", Spending: 1500 },
-  { name: "Thu", Spending: 4200 },
-  { name: "Fri", Spending: 3800 },
-  { name: "Sat", Spending: 6000 },
-  { name: "Sun", Spending: 2200 },
-];
-
-const defaultYearly = [
-  { name: "Jan", Spending: 45000 },
-  { name: "Feb", Spending: 38000 },
-  { name: "Mar", Spending: 52000 },
-  { name: "Apr", Spending: 48000 },
-  { name: "May", Spending: 61000 },
-  { name: "Jun", Spending: 55000 },
-];
-
-export default function SpendingChart({
-  monthlyTrends,
-  weeklyMock = defaultWeekly,
-  yearlyMock = defaultYearly,
-}: SpendingChartProps) {
+export default function SpendingChart({ monthlyTrends, trends }: SpendingChartProps) {
   const [filter, setFilter] = useState<"Weekly" | "Monthly" | "Yearly">("Monthly");
   const [mounted, setMounted] = useState(false);
 
@@ -55,11 +32,16 @@ export default function SpendingChart({
     Spending: t.expense,
   }));
 
-  const chartData = filter === "Monthly"
-    ? parsedMonthly
-    : filter === "Weekly"
-    ? weeklyMock
-    : yearlyMock;
+  // Map real trends data from the API — all tabs now use real transaction aggregations
+  const parsedWeekly = (trends?.weekly ?? []).map((d) => ({ name: d.name, Spending: d.Expense }));
+  const parsedYearly = (trends?.yearly ?? []).map((d) => ({ name: d.name, Spending: d.Expense }));
+
+  const chartData =
+    filter === "Monthly"
+      ? parsedMonthly
+      : filter === "Weekly"
+      ? parsedWeekly
+      : parsedYearly;
 
   return (
     <div className="p-6 bg-white border border-[#F6B7CF]/15 rounded-[24px] shadow-[0_12px_40px_rgba(0,0,0,0.03)] flex flex-col justify-between relative overflow-hidden h-full">

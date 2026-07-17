@@ -444,7 +444,7 @@ export default function OverviewClient({ userName }: OverviewClientProps) {
 
       {/* Spending Chart */}
       <motion.div variants={itemVariants} className="w-full">
-        <SpendingChart monthlyTrends={monthlyTrends} />
+        <SpendingChart monthlyTrends={monthlyTrends} trends={data!.trends} />
       </motion.div>
 
       {/* Recent Transactions — with Edit and Archive row actions */}

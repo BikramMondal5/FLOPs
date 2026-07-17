@@ -70,6 +70,21 @@ export async function getDashboardAnalyticsService(
     const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
     const daysCount = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 1;
 
+    // Compute trends date boundaries: encompass the current week, month, and year
+    const refDate = new Date();
+    const day = refDate.getDay();
+    const diffToMonday = day === 0 ? -6 : 1 - day;
+    const monday = new Date(refDate);
+    monday.setDate(refDate.getDate() + diffToMonday);
+    monday.setHours(0, 0, 0, 0);
+    const firstOfYear = new Date(refDate.getFullYear(), 0, 1, 0, 0, 0, 0);
+    const trendsStart = new Date(Math.min(monday.getTime(), firstOfYear.getTime()));
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+    sunday.setHours(23, 59, 59, 999);
+    const endOfYear = new Date(refDate.getFullYear(), 11, 31, 23, 59, 59, 999);
+    const trendsEnd = new Date(Math.max(refDate.getTime(), sunday.getTime(), endOfYear.getTime()));
+
     // Run parallel aggregation calls to prevent N+1 waterfall requests
     const [
       accountsRaw,
@@ -78,6 +93,7 @@ export async function getDashboardAnalyticsService(
       categoriesRaw,
       monthlyRaw,
       sparklineRaw,
+      trendsRaw,
     ] = await Promise.all([
       fetchRawAccounts(db, userId),
       fetchRawRecentTransactions(db, userId, 10),
@@ -85,6 +101,7 @@ export async function getDashboardAnalyticsService(
       aggregateRawCategories(db, userId, startDate, endDate),
       aggregateRawMonthly(db, userId, startDate, endDate),
       aggregateRawSparkline(db, userId, 7),
+      fetchRawTrendsTransactions(db, userId, trendsStart, trendsEnd, {}),
     ]);
 
     // Format serialized accounts & transaction lists safely
@@ -109,6 +126,9 @@ export async function getDashboardAnalyticsService(
     // Parse sparkline mapping
     const sparkline = calculateSparkline(sparklineRaw, 7);
 
+    // Compute weekly, monthly, and yearly trend datasets
+    const trends = calculateTrends(trendsRaw, refDate);
+
     // Orchestrate mapping
     const dto = mapRawDashboardToDTO(
       serializedAccounts,
@@ -117,7 +137,8 @@ export async function getDashboardAnalyticsService(
       categoriesRaw,
       monthlyRaw,
       sparkline,
-      daysCount
+      daysCount,
+      trends
     );
 
     // Save back to local cache
