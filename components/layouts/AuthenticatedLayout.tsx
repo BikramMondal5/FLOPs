@@ -131,7 +131,7 @@ export default function AuthenticatedLayout({
       </nav>
 
       {/* Main Layout Grid with top padding for fixed navbar */}
-      <div className="flex-1 flex flex-col lg:flex-row p-6 md:p-8 gap-6 md:gap-8 relative z-10 pt-[96px]">
+      <div className="flex-1 flex flex-col lg:flex-row p-6 md:p-8 gap-6 md:gap-8 relative z-10 pt-28">
         {/* Desktop Sidebar — fixed */}
         <div className="hidden lg:block z-20 fixed left-6 md:left-8 top-[96px] w-[280px] h-[calc(100vh-128px)]">
           <Sidebar />

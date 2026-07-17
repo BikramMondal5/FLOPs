@@ -1,9 +1,8 @@
 "use client";
 
 import { useState, useRef } from "react";
-import Image from "next/image";
-import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
+import Navbar from "@/components/common/Navbar";
 import {
   Menu,
   X,
@@ -29,20 +28,14 @@ import CreateGoalModal from "@/components/goals/CreateGoalModal";
 import GoalDetailsDrawer from "@/components/goals/GoalDetailsDrawer";
 import type { GoalDashboardDTO, SmartGoalDetailsDTO } from "@/features/goals/dto/goal-dashboard.dto";
 
-const navLinks = [
-  { href: "/#home", label: "Home" },
-  { href: "/#features", label: "Features" },
-  { href: "/#how-it-works", label: "How It Works" },
-  { href: "/#testimonials", label: "Testimonials" },
-  { href: "/#faq", label: "FAQ" },
-];
-
 interface GoalsClientProps {
   initialData: GoalDashboardDTO;
   userName: string;
+  userEmail?: string;
+  userImage?: string | null;
 }
 
-export default function GoalsClient({ initialData, userName }: GoalsClientProps) {
+export default function GoalsClient({ initialData, userName, userEmail, userImage }: GoalsClientProps) {
   const [data, setData] = useState<GoalDashboardDTO>(initialData);
   const [selectedGoal, setSelectedGoal] = useState<any | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
@@ -206,44 +199,18 @@ export default function GoalsClient({ initialData, userName }: GoalsClientProps)
       <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full pointer-events-none z-0 bg-radial from-[#F6B7CF]/10 to-transparent filter blur-[120px]" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[55vw] h-[55vw] rounded-full pointer-events-none z-0 bg-radial from-[#F9DCE7]/15 to-transparent filter blur-[140px]" />
 
-      {/* Navbar - Fixed */}
-      <nav
-        className="fixed top-0 left-0 right-0 z-30 flex w-full items-center justify-between px-6 md:px-8 border-b border-[#F6B7CF]/10 bg-[#FCFCFD]/80 backdrop-blur-md shrink-0"
-        style={{ height: "72px" }}
-      >
-        <Link href="/" className="flex items-center gap-2 no-underline z-10 relative">
-          <Image
-            src="/logo.png"
-            alt="FLOPs logo"
-            width={32}
-            height={32}
-            className="h-8 w-8 rounded-full object-contain"
-            priority
-          />
-          <span className="font-medium text-[#18181B] text-lg">FLOPs</span>
-        </Link>
+      <Navbar
+        userInfo={{
+          name: userName,
+          email: userEmail,
+          image: userImage,
+        }}
+      />
 
-        <div className="flex items-center z-10 relative">
-          <Link
-            href="/overview"
-            className="no-underline text-[15px] font-medium text-white shadow-sm"
-            style={{
-              fontFamily: "var(--font-body)",
-              background: "#18181B",
-              borderRadius: "999px",
-              padding: "10px 24px",
-            }}
-          >
-            My Overview
-          </Link>
-        </div>
-      </nav>
-
-      {/* Main Grid Workspace with top padding for fixed navbar */}
-      <div className="flex-1 flex flex-col lg:flex-row p-6 md:p-8 gap-6 md:gap-8 relative z-10 pt-[96px]">
-        
-        {/* Sidebar */}
-        <div className="hidden lg:block z-20 fixed left-6 md:left-8 top-[96px] w-[280px] h-[calc(100vh-128px)]">
+      {/* Main Grid Layout Container with top padding for fixed navbar */}
+      <div className="flex-1 w-full max-w-[1600px] mx-auto px-6 md:px-8 pb-12 pt-28 relative z-10 flex flex-col lg:flex-row gap-6 md:gap-8">
+        {/* Desktop Sidebar (Left) - Sticky */}
+        <div className="hidden lg:block z-20 sticky top-[88px] w-[280px] h-[calc(100vh-120px)] shrink-0">
           <Sidebar />
         </div>
 
@@ -263,8 +230,8 @@ export default function GoalsClient({ initialData, userName }: GoalsClientProps)
           </div>
         )}
 
-        {/* Workspace Column */}
-        <div className="flex-grow flex flex-col gap-6 md:gap-8 z-10 lg:pl-[304px]">
+        {/* Main Workspace Column */}
+        <div className="flex-grow flex flex-col gap-6 md:gap-8 z-10 min-w-0">
           {/* Header Panel */}
           <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-4">

@@ -1,9 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import Image from "next/image";
-import Link from "next/link";
 import { motion } from "framer-motion";
+import Navbar from "@/components/common/Navbar";
 import {
   Menu,
   X,
@@ -30,19 +29,13 @@ import type { FinancialDashboardDTO } from "@/features/analytics/dto/dashboard.d
 import type { AccountDTO } from "@/features/accounts/types/account.types";
 import type { TransactionDTO } from "@/features/transactions/types/transaction.types";
 
-const navLinks = [
-  { href: "/#home", label: "Home" },
-  { href: "/#features", label: "Features" },
-  { href: "/#how-it-works", label: "How It Works" },
-  { href: "/#testimonials", label: "Testimonials" },
-  { href: "/#faq", label: "FAQ" },
-];
-
 interface OverviewClientProps {
   userName: string;
+  userEmail?: string;
+  userImage?: string | null;
 }
 
-export default function OverviewClient({ userName }: OverviewClientProps) {
+export default function OverviewClient({ userName, userEmail, userImage }: OverviewClientProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const [mouse, setMouse] = useState({ x: -9999, y: -9999, active: false });
@@ -168,49 +161,18 @@ export default function OverviewClient({ userName }: OverviewClientProps) {
       <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full pointer-events-none z-0 bg-radial from-[#F6B7CF]/10 to-transparent filter blur-[120px]" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[55vw] h-[55vw] rounded-full pointer-events-none z-0 bg-radial from-[#F9DCE7]/15 to-transparent filter blur-[140px]" />
 
-      {/* Top Navbar - Fixed */}
-      <nav
-        className="fixed top-0 left-0 right-0 z-30 flex w-full items-center justify-between px-6 md:px-8 border-b border-[#F6B7CF]/10 bg-[#FCFCFD]/80 backdrop-blur-md shrink-0"
-        style={{ height: "72px" }}
-      >
-        <Link href="/" className="flex items-center gap-2 no-underline z-10 relative">
-          <Image src="/logo.png" alt="FLOPs logo" width={32} height={32} className="h-8 w-8 rounded-full object-contain" priority />
-          <span className="font-medium text-[#18181B]" style={{ fontFamily: "var(--font-body)", fontSize: "18px", letterSpacing: "-0.01em" }}>
-            FLOPs
-          </span>
-        </Link>
+      <Navbar
+        userInfo={{
+          name: userName,
+          email: userEmail,
+          image: userImage,
+        }}
+      />
 
-        {/* Center Links */}
-        <div className="absolute inset-0 hidden md:flex items-center justify-center pointer-events-none">
-          <div className="flex items-center gap-8 pointer-events-auto">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="no-underline transition-opacity duration-150 text-[15px]"
-                style={{ fontFamily: "var(--font-body)", color: "#18181B", opacity: 0.8 }}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        <div className="flex items-center z-10 relative">
-          <Link
-            href="/accounts"
-            className="no-underline text-[15px] font-medium text-white"
-            style={{ fontFamily: "var(--font-body)", background: "#18181B", borderRadius: "999px", padding: "10px 24px", boxShadow: "0 2px 12px rgba(0,0,0,0.15)" }}
-          >
-            My Accounts
-          </Link>
-        </div>
-      </nav>
-
-      {/* Main Grid with top padding for fixed navbar */}
-      <div className="flex-1 flex flex-col lg:flex-row p-6 md:p-8 gap-6 md:gap-8 relative z-10 pt-[96px]">
-        {/* Left Sidebar */}
-        <div className="hidden lg:block z-20 fixed left-6 md:left-8 top-[96px] w-[280px] h-[calc(100vh-128px)]">
+      {/* Main Grid Layout Container with top padding for fixed navbar */}
+      <div className="flex-1 w-full max-w-[1600px] mx-auto px-6 md:px-8 pb-12 pt-28 relative z-10 flex flex-col lg:flex-row gap-6 md:gap-8">
+        {/* Desktop Sidebar (Left) - Sticky */}
+        <div className="hidden lg:block z-20 sticky top-[88px] w-[280px] h-[calc(100vh-120px)] shrink-0">
           <Sidebar />
         </div>
 
@@ -230,8 +192,8 @@ export default function OverviewClient({ userName }: OverviewClientProps) {
           </div>
         )}
 
-        {/* Main workspace */}
-        <div className="flex-1 flex flex-col gap-6 md:gap-8 z-10 lg:pl-[304px]">
+        {/* Main Workspace Column */}
+        <div className="flex-grow flex flex-col gap-6 md:gap-8 z-10 min-w-0">
           {/* Header */}
           <header className="flex items-center justify-between">
             <div className="flex items-center gap-4">

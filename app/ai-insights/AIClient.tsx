@@ -1,9 +1,8 @@
 "use client";
 
 import { useState, useRef } from "react";
-import Image from "next/image";
-import Link from "next/link";
 import { motion } from "framer-motion";
+import Navbar from "@/components/common/Navbar";
 import {
   Menu,
   X,
@@ -24,15 +23,17 @@ import type { AIInsightsDashboardDTO } from "@/features/ai/dto/ai-dashboard.dto"
 interface AIClientProps {
   initialData: AIInsightsDashboardDTO;
   userName: string;
+  userEmail?: string;
+  userImage?: string | null;
 }
 
-export default function AIClient({ initialData, userName }: AIClientProps) {
+export default function AIClient({ initialData, userName, userEmail, userImage }: AIClientProps) {
   const [data, setData] = useState<AIInsightsDashboardDTO>(initialData);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Chat conversational states
-  const [chatMessages, setChatMessages] = useState<Array<{ role: "user" | "model"; content: string }>>([
-    { role: "model", content: `Hello ${userName}! I am your FLOPs AI assistant. Ask me questions about your monthly spending or active savings trackers.` }
+  const [chatMessages, setChatMessages] = useState<Array<{ role: "user" | "assistant"; content: string }>>([
+    { role: "assistant", content: `Hello ${userName}! I am your FLOPs AI assistant. Ask me questions about your monthly spending or active savings trackers.` }
   ]);
   const [inputValue, setInputValue] = useState("");
   const [suggestedPrompts, setSuggestedPrompts] = useState<string[]>([
@@ -64,30 +65,32 @@ export default function AIClient({ initialData, userName }: AIClientProps) {
     setLoading(true);
 
     const nextUserMsg = { role: "user" as const, content: text };
-    const historyPayload = [...chatMessages, nextUserMsg];
     setChatMessages((prev) => [...prev, nextUserMsg]);
     setInputValue("");
 
     try {
+      // Keep last 10 messages as history (excluding the current message)
+      const conversationHistory = chatMessages.slice(-10);
+
       const response = await fetch("/api/ai/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          history: historyPayload,
-          userMessage: text
+          message: text,
+          history: conversationHistory
         })
       });
       const result = await response.json();
 
       if (result.success && result.data) {
-        setChatMessages((prev) => [...prev, { role: "model", content: result.data.response }]);
-        setSuggestedPrompts(result.data.suggestedPrompts || []);
+        setChatMessages((prev) => [...prev, { role: "assistant", content: result.data.reply }]);
+        setSuggestedPrompts(result.data.suggestedQuestions || []);
       } else {
-        setChatMessages((prev) => [...prev, { role: "model", content: "Failed to compile recommendations. Please try again." }]);
+        setChatMessages((prev) => [...prev, { role: "assistant", content: "Unable to contact the AI assistant. Please try again." }]);
       }
     } catch (err) {
       console.error(err);
-      setChatMessages((prev) => [...prev, { role: "model", content: "Error connecting to AI service." }]);
+      setChatMessages((prev) => [...prev, { role: "assistant", content: "Unable to contact the AI assistant. Please try again." }]);
     } finally {
       setLoading(false);
     }
@@ -147,44 +150,18 @@ export default function AIClient({ initialData, userName }: AIClientProps) {
       <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full pointer-events-none z-0 bg-radial from-[#F6B7CF]/10 to-transparent filter blur-[120px]" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[55vw] h-[55vw] rounded-full pointer-events-none z-0 bg-radial from-[#F9DCE7]/15 to-transparent filter blur-[140px]" />
 
-      {/* Fixed Navbar */}
-      <nav
-        className="fixed top-0 left-0 right-0 z-30 flex w-full items-center justify-between px-6 md:px-8 border-b border-[#F6B7CF]/10 bg-[#FCFCFD]/80 backdrop-blur-md shrink-0"
-        style={{ height: "72px" }}
-      >
-        <Link href="/" className="flex items-center gap-2 no-underline z-10 relative">
-          <Image
-            src="/logo.png"
-            alt="FLOPs logo"
-            width={32}
-            height={32}
-            className="h-8 w-8 rounded-full object-contain"
-            priority
-          />
-          <span className="font-medium text-[#18181B] text-lg">FLOPs</span>
-        </Link>
+      <Navbar
+        userInfo={{
+          name: userName,
+          email: userEmail,
+          image: userImage,
+        }}
+      />
 
-        <div className="flex items-center gap-4 z-10 relative">
-          <Link
-            href="/overview"
-            className="no-underline text-[15px] font-medium text-white shadow-sm"
-            style={{
-              fontFamily: "var(--font-body)",
-              background: "#18181B",
-              borderRadius: "999px",
-              padding: "10px 24px",
-            }}
-          >
-            My Dashboard
-          </Link>
-        </div>
-      </nav>
-
-      {/* Workspace Wrapper */}
-      <div className="flex-1 w-full max-w-[1600px] mx-auto px-6 md:px-8 pb-12 pt-[96px] md:pt-[110px] relative z-10 flex flex-col lg:flex-row gap-6 md:gap-8">
-        
-        {/* Sidebar */}
-        <div className="hidden lg:block z-20 sticky top-[110px] w-[280px] h-[calc(100vh-140px)] shrink-0">
+      {/* Main Grid Layout Container with top padding for fixed navbar */}
+      <div className="flex-1 w-full max-w-[1600px] mx-auto px-6 md:px-8 pb-12 pt-28 relative z-10 flex flex-col lg:flex-row gap-6 md:gap-8">
+        {/* Desktop Sidebar (Left) - Sticky */}
+        <div className="hidden lg:block z-20 sticky top-[88px] w-[280px] h-[calc(100vh-120px)] shrink-0">
           <Sidebar />
         </div>
 
@@ -204,7 +181,7 @@ export default function AIClient({ initialData, userName }: AIClientProps) {
           </div>
         )}
 
-        {/* Workspace details */}
+        {/* Main Workspace Column */}
         <div className="flex-grow flex flex-col gap-6 md:gap-8 z-10 min-w-0">
           <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
@@ -232,7 +209,74 @@ export default function AIClient({ initialData, userName }: AIClientProps) {
             animate="show"
             className="flex flex-col gap-6 md:gap-8"
           >
-            {/* Top Summaries card */}
+            {/* PRIMARY: FLOPs Personal Assistant - Full Width */}
+            <motion.div variants={itemVariants} className="flex flex-col bg-white border border-[#F6B7CF]/15 rounded-[28px] shadow-sm overflow-hidden h-[540px]">
+              {/* Header */}
+              <div className="p-4 border-b border-[#F6B7CF]/10 bg-gradient-to-r from-[#FFF4F8] to-[#F9DCE7]/20 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Brain className="w-5 h-5 text-[#D46A96] animate-pulse" />
+                  <span className="text-sm font-bold text-[#D46A96]">FLOPs Personal Assistant</span>
+                </div>
+                <span className="text-[10px] text-zinc-400 uppercase tracking-wider">AI Financial Intelligence</span>
+              </div>
+
+              {/* Messages body */}
+              <div className="flex-1 p-4 overflow-y-auto flex flex-col gap-3">
+                {chatMessages.map((msg, idx) => (
+                  <div
+                    key={idx}
+                    className={`max-w-[80%] p-3 rounded-2xl text-xs leading-relaxed ${
+                      msg.role === "user"
+                        ? "bg-zinc-800 text-white self-end rounded-tr-none"
+                        : "bg-[#FFF4F8] border border-[#F6B7CF]/10 text-zinc-700 self-start rounded-tl-none"
+                    }`}
+                  >
+                    {msg.content}
+                  </div>
+                ))}
+                {loading && (
+                  <div className="bg-zinc-100 text-zinc-400 text-xs p-3 rounded-2xl self-start animate-pulse">
+                    Analyzing your financial data...
+                  </div>
+                )}
+              </div>
+
+              {/* Suggestions triggers */}
+              <div className="px-4 py-2 flex flex-wrap gap-2 border-t border-[#F6B7CF]/10">
+                {suggestedPrompts.map((sug, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => handleSendMessage(sug)}
+                    disabled={loading}
+                    className="text-[10px] font-medium py-1.5 px-3 bg-[#FFF4F8] border border-[#F6B7CF]/20 text-[#D46A96] hover:bg-[#F6B7CF]/10 rounded-full transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    {sug}
+                  </button>
+                ))}
+              </div>
+
+              {/* Input panel */}
+              <div className="p-3 border-t border-[#F6B7CF]/10 flex gap-2">
+                <input
+                  type="text"
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && !loading && handleSendMessage(inputValue)}
+                  placeholder="Ask about your spending, budgets, or goals..."
+                  disabled={loading}
+                  className="flex-grow bg-zinc-50 border border-zinc-200 text-xs py-2 px-4 rounded-full outline-none focus:border-[#D46A96] disabled:opacity-50"
+                />
+                <button
+                  onClick={() => handleSendMessage(inputValue)}
+                  disabled={loading || !inputValue.trim()}
+                  className="w-10 h-10 bg-[#D46A96] text-white rounded-full flex items-center justify-center hover:bg-[#d46a96]/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  <Send className="w-4 h-4" />
+                </button>
+              </div>
+            </motion.div>
+
+            {/* AI Executive Stance */}
             <motion.div variants={itemVariants} className="p-6 bg-white border border-[#F6B7CF]/15 rounded-[28px] shadow-sm grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="md:col-span-2 flex flex-col">
                 <div className="flex items-center gap-2 mb-2">
@@ -259,122 +303,52 @@ export default function AIClient({ initialData, userName }: AIClientProps) {
               </div>
             </motion.div>
 
-            {/* Split row: Chat assistant left, cards list right */}
-            <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
+            {/* Split row: Dynamic Recommendations & Risk Assessment */}
+            <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
               
-              {/* Conversational workspace */}
-              <div className="lg:col-span-2 flex flex-col bg-white border border-[#F6B7CF]/15 rounded-[28px] shadow-sm overflow-hidden h-[540px]">
-                {/* Header */}
-                <div className="p-4 border-b border-[#F6B7CF]/10 bg-zinc-50 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-[#D46A96]" />
-                    <span className="text-xs font-semibold text-zinc-700">FLOPs Personal Assistant</span>
-                  </div>
+              {/* Dynamic Recommendations */}
+              <div className="p-6 bg-white border border-[#F6B7CF]/15 rounded-[24px] shadow-sm">
+                <div className="flex items-center gap-2 mb-4">
+                  <Sparkles className="w-4 h-4 text-[#D46A96]" />
+                  <h3 className="text-sm font-semibold text-zinc-800 m-0">Dynamic Recommendations</h3>
                 </div>
 
-                {/* Messages body */}
-                <div className="flex-1 p-4 overflow-y-auto flex flex-col gap-3">
-                  {chatMessages.map((msg, idx) => (
-                    <div
-                      key={idx}
-                      className={`max-w-[80%] p-3 rounded-2xl text-xs leading-relaxed ${
-                        msg.role === "user"
-                          ? "bg-zinc-800 text-white self-end rounded-tr-none"
-                          : "bg-[#FFF4F8] border border-[#F6B7CF]/10 text-zinc-700 self-start rounded-tl-none"
-                      }`}
-                    >
-                      {msg.content}
+                <div className="flex flex-col gap-3">
+                  {recommendations.map((rec, idx) => (
+                    <div key={idx} className="p-3 bg-zinc-50 border border-zinc-100 rounded-xl">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-[10px] font-semibold text-zinc-400 uppercase">{rec.category}</span>
+                        <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${
+                          rec.type === "warning" ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700"
+                        }`}>{rec.type}</span>
+                      </div>
+                      <p className="text-xs text-zinc-600 m-0 leading-normal">{rec.message}</p>
                     </div>
                   ))}
-                  {loading && (
-                    <div className="bg-zinc-100 text-zinc-400 text-xs p-3 rounded-2xl self-start animate-pulse">
-                      Analyzing ledger data...
-                    </div>
-                  )}
-                </div>
-
-                {/* Suggestions triggers */}
-                <div className="px-4 py-2 flex flex-wrap gap-2 border-t border-[#F6B7CF]/10">
-                  {suggestedPrompts.map((sug, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => handleSendMessage(sug)}
-                      disabled={loading}
-                      className="text-[10px] font-medium py-1 px-3 bg-zinc-50 border border-zinc-200 text-zinc-600 hover:bg-zinc-100 rounded-full transition-colors"
-                    >
-                      {sug}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Input panel */}
-                <div className="p-3 border-t border-[#F6B7CF]/10 flex gap-2">
-                  <input
-                    type="text"
-                    value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleSendMessage(inputValue)}
-                    placeholder="Ask AI assistant about your targets..."
-                    className="flex-grow bg-zinc-50 border border-zinc-200 text-xs py-2 px-4 rounded-full outline-none focus:border-[#D46A96]"
-                  />
-                  <button
-                    onClick={() => handleSendMessage(inputValue)}
-                    disabled={loading || !inputValue.trim()}
-                    className="w-10 h-10 bg-zinc-800 text-white rounded-full flex items-center justify-center hover:bg-zinc-700 transition-colors"
-                  >
-                    <Send className="w-4 h-4" />
-                  </button>
                 </div>
               </div>
 
-              {/* Suggestions sidebar */}
-              <div className="flex flex-col gap-6">
-                
-                {/* Rules lists recommendations */}
-                <div className="p-6 bg-white border border-[#F6B7CF]/15 rounded-[24px] shadow-sm">
-                  <div className="flex items-center gap-2 mb-4">
-                    <Sparkles className="w-4 h-4 text-[#D46A96]" />
-                    <h3 className="text-sm font-semibold text-zinc-800 m-0">Dynamic Recommendations</h3>
-                  </div>
-
-                  <div className="flex flex-col gap-3">
-                    {recommendations.map((rec, idx) => (
-                      <div key={idx} className="p-3 bg-zinc-50 border border-zinc-100 rounded-xl">
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-[10px] font-semibold text-zinc-400 uppercase">{rec.category}</span>
-                          <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${
-                            rec.type === "warning" ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700"
-                          }`}>{rec.type}</span>
-                        </div>
-                        <p className="text-xs text-zinc-600 m-0 leading-normal">{rec.message}</p>
-                      </div>
-                    ))}
-                  </div>
+              {/* Risk Assessment */}
+              <div className="p-6 bg-white border border-[#F6B7CF]/15 rounded-[24px] shadow-sm">
+                <div className="flex items-center gap-2 mb-4">
+                  <AlertTriangle className="w-4 h-4 text-amber-500" />
+                  <h3 className="text-sm font-semibold text-zinc-800 m-0">Risk Assessment</h3>
                 </div>
 
-                {/* Risks alerts */}
-                <div className="p-6 bg-white border border-[#F6B7CF]/15 rounded-[24px] shadow-sm">
-                  <div className="flex items-center gap-2 mb-4">
-                    <AlertTriangle className="w-4 h-4 text-amber-500" />
-                    <h3 className="text-sm font-semibold text-zinc-800 m-0">Risk Assessments</h3>
-                  </div>
-
-                  <div className="flex flex-col gap-3">
-                    {risks.map((risk, idx) => (
-                      <div key={idx} className="p-3 bg-amber-50/50 border border-amber-100 rounded-xl text-xs">
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="font-bold text-amber-700">{risk.trigger}</span>
-                          <span className="text-[9px] text-amber-500 uppercase">{risk.level} Priority</span>
-                        </div>
-                        <p className="text-zinc-500 m-0">{risk.impact}</p>
+                <div className="flex flex-col gap-3">
+                  {risks.map((risk, idx) => (
+                    <div key={idx} className="p-3 bg-amber-50/50 border border-amber-100 rounded-xl text-xs">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-bold text-amber-700">{risk.trigger}</span>
+                        <span className="text-[9px] text-amber-500 uppercase">{risk.level} Priority</span>
                       </div>
-                    ))}
-                    {risks.length === 0 && (
-                      <span className="text-xs text-zinc-400 text-center py-4">No risk triggers detected. Safe utilization.</span>
-                    )}
-                  </div>
+                      <p className="text-zinc-500 m-0">{risk.impact}</p>
+                    </div>
+                  ))}
+                  {risks.length === 0 && (
+                    <span className="text-xs text-zinc-400 text-center py-4">No risk triggers detected. Safe utilization.</span>
+                  )}
                 </div>
-
               </div>
 
             </motion.div>

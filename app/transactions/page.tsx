@@ -1,10 +1,9 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { Suspense } from "react";
-import Image from "next/image";
-import Link from "next/link";
 
 import Sidebar from "@/components/dashboard/Sidebar";
+import Navbar from "@/components/common/Navbar";
 import TransactionsClient from "@/components/transactions/TransactionsClient";
 
 import { getAccountsService } from "@/features/accounts/services/account.service";
@@ -68,63 +67,23 @@ export default async function TransactionsPage() {
       <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full pointer-events-none z-0 bg-radial from-[#F6B7CF]/10 to-transparent filter blur-[120px]" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[55vw] h-[55vw] rounded-full pointer-events-none z-0 bg-radial from-[#F9DCE7]/15 to-transparent filter blur-[140px]" />
 
-      {/* Top Navbar - Fixed */}
-      <nav
-        className="fixed top-0 left-0 right-0 z-30 flex w-full items-center justify-between px-6 md:px-8 border-b border-[#F6B7CF]/10 bg-[#FCFCFD]/80 backdrop-blur-md shrink-0"
-        style={{ height: "72px" }}
-      >
-        <Link href="/" className="flex items-center gap-2 no-underline z-10 relative">
-          <Image
-            src="/logo.png"
-            alt="FLOPs logo"
-            width={32}
-            height={32}
-            className="h-8 w-8 rounded-full object-contain"
-            priority
-          />
-          <span
-            className="font-medium text-[#18181B]"
-            style={{ fontFamily: "var(--font-body)", fontSize: "18px", letterSpacing: "-0.01em" }}
-          >
-            FLOPs
-          </span>
-        </Link>
+      <Navbar
+        userInfo={{
+          name: session.user.name,
+          email: session.user.email,
+          image: session.user.image,
+        }}
+      />
 
-        {/* User Info profile */}
-        <div className="flex items-center gap-3 z-10 relative">
-          <div className="text-right hidden sm:block">
-            <p className="text-[13px] font-semibold text-[#18181B] m-0 leading-none">
-              {session.user.name}
-            </p>
-            <p className="text-[11px] text-[#9CA3AF] m-0 mt-0.5 leading-none">
-              {session.user.email}
-            </p>
-          </div>
-          {session.user.image ? (
-            <img
-              src={session.user.image}
-              alt={session.user.name ?? "User"}
-              width={36}
-              height={36}
-              className="w-9 h-9 rounded-full border-2 border-[#F6B7CF]/30 object-cover"
-            />
-          ) : (
-            <div className="w-9 h-9 rounded-full bg-[#FFF4F8] border-2 border-[#F6B7CF]/30 flex items-center justify-center text-[#D46A96] text-[14px] font-bold">
-              {session.user.name?.charAt(0).toUpperCase() ?? "U"}
-            </div>
-          )}
-        </div>
-      </nav>
-
-      {/* Grid workspace with top padding for fixed navbar */}
-      <div className="flex-1 flex flex-col lg:flex-row p-6 md:p-8 gap-6 md:gap-8 relative z-10 pt-[96px]">
-        {/* Fixed left sidebar */}
-        <div className="hidden lg:block z-20 fixed left-6 md:left-8 top-[96px] w-[280px] h-[calc(100vh-128px)]">
+      {/* Main Grid Layout Container with top padding for fixed navbar */}
+      <div className="flex-1 w-full max-w-[1600px] mx-auto px-6 md:px-8 pb-12 pt-28 relative z-10 flex flex-col lg:flex-row gap-6 md:gap-8">
+        {/* Desktop Sidebar (Left) - Sticky */}
+        <div className="hidden lg:block z-20 sticky top-[88px] w-[280px] h-[calc(100vh-120px)] shrink-0">
           <Sidebar />
         </div>
 
-        {/* Dynamic content column */}
-        <div className="flex-1 flex flex-col gap-6 md:gap-8 z-10 lg:pl-[304px]">
+        {/* Main Workspace Column */}
+        <div className="flex-grow flex flex-col gap-6 md:gap-8 z-10 min-w-0">
           {/* Header */}
           <header className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
             <div>

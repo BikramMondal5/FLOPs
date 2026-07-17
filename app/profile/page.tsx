@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useRef } from "react";
-import Image from "next/image";
-import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSession } from "next-auth/react";
+import Navbar from "@/components/common/Navbar";
 import {
   Menu,
   X,
@@ -31,17 +31,10 @@ import PrivacySettings from "@/components/profile/PrivacySettings";
 import ActivityTimeline from "@/components/profile/ActivityTimeline";
 import GlobalBrainAssistant from "@/components/dashboard/GlobalBrainAssistant";
 
-const navLinks = [
-  { href: "/#home", label: "Home" },
-  { href: "/#features", label: "Features" },
-  { href: "/#how-it-works", label: "How It Works" },
-  { href: "/#testimonials", label: "Testimonials" },
-  { href: "/#faq", label: "FAQ" },
-];
-
 type SettingTab = "Personal" | "Financial" | "Security" | "Notifications" | "Appearance" | "Privacy" | "Activity";
 
 export default function ProfilePage() {
+  const { data: session } = useSession();
   const [activeTab, setActiveTab] = useState<SettingTab>("Personal");
   const [aiOpen, setAiOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -129,79 +122,16 @@ export default function ProfilePage() {
       <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full pointer-events-none z-0 bg-radial from-[#F6B7CF]/10 to-transparent filter blur-[120px]" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[55vw] h-[55vw] rounded-full pointer-events-none z-0 bg-radial from-[#F9DCE7]/15 to-transparent filter blur-[140px]" />
 
-      {/* Top Navbar - Fixed */}
-      <nav
-        className="fixed top-0 left-0 right-0 z-30 flex w-full items-center justify-between px-6 md:px-8 border-b border-[#F6B7CF]/10 bg-[#FCFCFD]/80 backdrop-blur-md shrink-0"
-        style={{ height: "72px" }}
-      >
-        <Link href="/" className="flex items-center gap-2 no-underline z-10 relative">
-          <Image
-            src="/logo.png"
-            alt="FLOPs logo"
-            width={32}
-            height={32}
-            className="h-8 w-8 rounded-full object-contain"
-            priority
-          />
-          <span
-            className="font-medium text-[#18181B]"
-            style={{
-              fontFamily: "var(--font-body)",
-              fontSize: "18px",
-              letterSpacing: "-0.01em",
-            }}
-          >
-            FLOPs
-          </span>
-        </Link>
-
-        {/* Center Desktop nav links */}
-        <div className="absolute inset-0 hidden md:flex items-center justify-center pointer-events-none">
-          <div className="flex items-center gap-8 pointer-events-auto">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="no-underline transition-opacity duration-150 text-[15px]"
-                style={{
-                  fontFamily: "var(--font-body)",
-                  color: "#18181B",
-                  opacity: 0.8,
-                }}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        {/* Brain Assistant Trigger icon */}
-        <div className="flex items-center gap-4 z-10 relative">
-          <button
-            onClick={() => setAiOpen(true)}
-            className="w-10 h-10 bg-white border border-[#F6B7CF]/15 rounded-full flex items-center justify-center text-[#D46A96] shadow-sm hover:bg-[#FFF4F8] transition-colors cursor-pointer"
-          >
-            <Brain className="w-5 h-5 animate-pulse" />
-          </button>
-          
-          <Link
-            href="/plan"
-            className="no-underline text-[15px] font-medium text-white"
-            style={{
-              fontFamily: "var(--font-body)",
-              background: "#18181B",
-              borderRadius: "999px",
-              padding: "10px 24px",
-              boxShadow: "0 2px 12px rgba(0,0,0,0.15)",
-            }}
-          >
-            Get Started
-          </Link>
-        </div>
-      </nav>
+      <Navbar
+        userInfo={{
+          name: session?.user?.name,
+          email: session?.user?.email,
+          image: session?.user?.image,
+        }}
+      />
 
       {/* Main Grid Layout Container with top padding for fixed navbar */}
-      <div className="flex-1 w-full max-w-[1600px] mx-auto px-8 pb-12 pt-[96px] relative z-10 flex flex-col lg:flex-row gap-6 md:gap-8">
+      <div className="flex-1 w-full max-w-[1600px] mx-auto px-8 pb-12 pt-28 relative z-10 flex flex-col lg:flex-row gap-6 md:gap-8">
         
         {/* Desktop Sidebar (Left) - Sticky! */}
         <div className="hidden lg:block z-20 sticky top-[88px] w-[280px] h-[calc(100vh-120px)] shrink-0">

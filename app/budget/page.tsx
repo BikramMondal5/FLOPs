@@ -27,6 +27,8 @@ export default async function BudgetPlannerPage() {
     <BudgetClient
       initialData={response.data}
       userName={session.user.name || "Bikram"}
+      userEmail={session.user.email || undefined}
+      userImage={session.user.image || null}
     />
   );
 }

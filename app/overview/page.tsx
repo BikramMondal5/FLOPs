@@ -17,6 +17,8 @@ export default async function OverviewDashboard() {
   return (
     <OverviewClient
       userName={session.user.name || ""}
+      userEmail={session.user.email || undefined}
+      userImage={session.user.image || null}
     />
   );
 }
