@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { Star, User, Quote, MessageSquare, Send, Upload, Image as ImageIcon, ShieldCheck } from "lucide-react";
 
 // Predefined avatar options
@@ -146,6 +147,11 @@ export default function TestimonialCarousel() {
     allowPublic: false,
     avatar: null as string | null,
   });
+
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const fetchTestimonials = async () => {
@@ -349,8 +355,8 @@ export default function TestimonialCarousel() {
       </div>
 
       {/* Lightweight Custom Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 backdrop-blur-sm">
+      {isModalOpen && mounted && createPortal(
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
           <div className="relative w-full max-w-[550px] max-h-[85vh] bg-white border border-black/5 rounded-3xl p-8 shadow-xl overflow-hidden flex flex-col animate-scale-up text-left">
             <button
               onClick={() => {
@@ -627,7 +633,8 @@ export default function TestimonialCarousel() {
               )}
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       <style jsx global>{`

@@ -101,7 +101,7 @@ export default async function TransactionsPage() {
             </p>
           </div>
           {session.user.image ? (
-            <Image
+            <img
               src={session.user.image}
               alt={session.user.name ?? "User"}
               width={36}

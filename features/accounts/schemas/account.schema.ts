@@ -38,7 +38,7 @@ export const createAccountSchema = z.object({
 
   balance: z
     .number({ error: "Balance must be a number" })
-    .min(0, "Balance cannot be negative")
+    .min(-999_999_999, "Balance cannot be less than -999,999,999")
     .max(999_999_999, "Balance exceeds maximum limit"),
 
   color: z

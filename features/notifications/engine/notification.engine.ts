@@ -13,6 +13,8 @@ export function compileDynamicNotifications(
   const now = new Date();
   const yearMonth = `${now.getFullYear()}-${now.getMonth() + 1}`;
 
+  const stableCreatedAt = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0).toISOString();
+
   // 1. Calculate Monthly Cash Flow
   let totalIncome = 0;
   let totalExpense = 0;
@@ -32,7 +34,7 @@ export function compileDynamicNotifications(
       type: "CashFlow",
       severity: "warning",
       message: `Negative cash flow: You have spent more than you earned this month by ${Math.abs(netSavings)}.`,
-      createdAt: now.toISOString(),
+      createdAt: stableCreatedAt,
       isRead: false,
     });
   }
@@ -53,7 +55,7 @@ export function compileDynamicNotifications(
         severity: "critical",
         message: `Budget Exceeded: You have spent ${actualSpent} out of your ${b.budgetAmount} budget for ${b.category}.`,
         targetId: b._id,
-        createdAt: now.toISOString(),
+        createdAt: stableCreatedAt,
         isRead: false,
       });
     } else if (progressPercent >= threshold) {
@@ -63,7 +65,7 @@ export function compileDynamicNotifications(
         severity: "warning",
         message: `Budget Warning: You have used ${Math.round(progressPercent)}% of your ${b.budgetAmount} budget for ${b.category}.`,
         targetId: b._id,
-        createdAt: now.toISOString(),
+        createdAt: stableCreatedAt,
         isRead: false,
       });
     }
@@ -84,7 +86,7 @@ export function compileDynamicNotifications(
           severity: "critical",
           message: `Goal Deadline Passed: "${g.name}" has passed its target deadline of ${g.targetDate} and is only ${Math.round(progressPercent)}% funded.`,
           targetId: g._id,
-          createdAt: now.toISOString(),
+          createdAt: stableCreatedAt,
           isRead: false,
         });
       } else {
@@ -96,7 +98,7 @@ export function compileDynamicNotifications(
             severity: "warning",
             message: `Goal Deadline Approaching: "${g.name}" deadline is in ${daysLeft} days (${g.targetDate}) and is ${Math.round(progressPercent)}% funded.`,
             targetId: g._id,
-            createdAt: now.toISOString(),
+            createdAt: stableCreatedAt,
             isRead: false,
           });
         }

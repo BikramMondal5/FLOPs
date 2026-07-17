@@ -24,6 +24,7 @@ describe("Auth Integration Tests", () => {
         name: "John Doe",
         email: "john@example.com",
         password: "Password123!",
+        confirmPassword: "Password123!",
       };
 
       // Zod validation check

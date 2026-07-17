@@ -52,9 +52,9 @@ export async function getAccountByIdService(
 ): Promise<ApiResponse<AccountDTO>> {
   try {
     const db = await connectDB();
-    const account = await findAccountByIdWithSession(db, accountId, userId);
+    const account = (await findAccountByIdWithSession(db, accountId, userId)) as AccountDTO | null;
 
-    if (!account) {
+    if (!account || account.isArchived) {
       return {
         success: false,
         message: "Account not found or you do not have permission to view it.",

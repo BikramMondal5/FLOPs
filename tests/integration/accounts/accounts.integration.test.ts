@@ -103,7 +103,7 @@ describe("Accounts Integration Tests", () => {
   it("should archive an account (soft delete)", async () => {
     const createRes = await createAccountService(mockUserId, {
       name: "To Archive",
-      type: "Credit",
+      type: "Credit Card",
       balance: -200,
     });
     const accountId = createRes.data!._id;
@@ -123,7 +123,7 @@ describe("Accounts Integration Tests", () => {
   it("should query and filter accounts correctly", async () => {
     await createAccountService(mockUserId, { name: "HDFC Savings", type: "Savings", balance: 5000 });
     await createAccountService(mockUserId, { name: "SBI Savings", type: "Savings", balance: 2000 });
-    await createAccountService(mockUserId, { name: "ICICI Credit Card", type: "Credit", balance: -1000 });
+    await createAccountService(mockUserId, { name: "ICICI Credit Card", type: "Credit Card", balance: -1000 });
 
     // Query active savings accounts
     const savingsList = await getAccountsService(mockUserId, { type: "Savings" });

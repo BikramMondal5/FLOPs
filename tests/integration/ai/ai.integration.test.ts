@@ -33,21 +33,24 @@ describe("AI Insights Integration Tests", () => {
     // Set up active account, budget, goal to provide full context to the prompt
     const accountRes = await createAccountService(mockUserId, {
       name: "Checking",
-      type: "Checking",
+      type: "Current",
       balance: 10000,
     });
     accountId = accountRes.data!._id;
 
     await createBudgetService(mockUserId, {
-      category: "Food",
-      limit: 1000,
-      period: "monthly",
+      name: "Monthly Food",
+      category: "Food & Dining",
+      budgetAmount: 1000,
+      period: "Monthly",
+      startDate: "2026-07-01T00:00:00.000Z",
+      endDate: "2026-07-31T23:59:59.000Z",
     });
 
     await createGoalService(mockUserId, {
       name: "New Laptop",
       targetAmount: 50000,
-      currentAmount: 5000,
+      currentContribution: 5000,
       category: "Electronics",
       targetDate: "2027-12-31T00:00:00.000Z",
     });
@@ -56,8 +59,10 @@ describe("AI Insights Integration Tests", () => {
       accountId,
       amount: 200,
       type: "Expense",
-      category: "Food",
+      category: "Food & Dining",
       transactionDate: new Date().toISOString(),
+      merchant: "Restaurant",
+      paymentMethod: "Cash",
     });
   });
 

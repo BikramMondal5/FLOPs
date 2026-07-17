@@ -108,6 +108,7 @@ export async function aggregateRawCategories(
         $match: {
           userId: new ObjectId(userId),
           isArchived: false,
+          type: "Expense",
           transactionDate: { $gte: startDate, $lte: endDate },
         },
       },
@@ -214,3 +215,50 @@ export async function fetchRawRecentTransactions(db: Db, userId: string, limit =
     ])
     .toArray();
 }
+
+export async function fetchRawTrendsTransactions(
+  db: Db,
+  userId: string,
+  startDate: Date,
+  endDate: Date,
+  filters: {
+    category?: string;
+    accountId?: string;
+    paymentMethod?: string;
+    search?: string;
+  }
+) {
+  const query: Record<string, any> = {
+    userId: new ObjectId(userId),
+    isArchived: false,
+    type: "Expense",
+    transactionDate: { $gte: startDate, $lte: endDate },
+  };
+
+  if (filters.category && filters.category !== "all") {
+    query.category = filters.category;
+  }
+
+  if (filters.paymentMethod && filters.paymentMethod !== "all") {
+    query.paymentMethod = filters.paymentMethod;
+  }
+
+  if (filters.accountId && filters.accountId !== "all") {
+    try {
+      query.accountId = new ObjectId(filters.accountId);
+    } catch {
+      query.accountId = new ObjectId("000000000000000000000000");
+    }
+  }
+
+  if (filters.search && filters.search.trim()) {
+    const regex = { $regex: filters.search.trim(), $options: "i" };
+    query.$or = [{ merchant: regex }, { notes: regex }, { location: regex }];
+  }
+
+  return db
+    .collection(TRANSACTIONS_COLLECTION)
+    .find(query)
+    .toArray();
+}
+

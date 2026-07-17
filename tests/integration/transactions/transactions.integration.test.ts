@@ -37,7 +37,7 @@ describe("Transactions Integration Tests", () => {
     // Create a base account for transactions
     const accountRes = await createAccountService(mockUserId, {
       name: "Standard Checking",
-      type: "Checking",
+      type: "Current",
       balance: 1000,
     });
     accountId = accountRes.data!._id;
@@ -50,7 +50,9 @@ describe("Transactions Integration Tests", () => {
       type: "Income",
       category: "Salary",
       transactionDate: new Date().toISOString(),
-      description: "Monthly salary bonus",
+      merchant: "Company Corp",
+      paymentMethod: "Net Banking",
+      notes: "Monthly salary bonus",
     };
 
     const createRes = await createTransactionService(mockUserId, txData);
@@ -69,9 +71,11 @@ describe("Transactions Integration Tests", () => {
       accountId,
       amount: 150,
       type: "Expense",
-      category: "Food",
+      category: "Food & Dining",
       transactionDate: new Date().toISOString(),
-      description: "Dinner out",
+      merchant: "Restaurant",
+      paymentMethod: "Cash",
+      notes: "Dinner out",
     };
 
     const createRes = await createTransactionService(mockUserId, txData);
@@ -88,8 +92,10 @@ describe("Transactions Integration Tests", () => {
       accountId,
       amount: 200,
       type: "Expense",
-      category: "Utilities",
+      category: "Bills & Utilities",
       transactionDate: new Date().toISOString(),
+      merchant: "Electric Utility",
+      paymentMethod: "UPI",
     });
     const txId = createRes.data!._id;
 
@@ -113,8 +119,10 @@ describe("Transactions Integration Tests", () => {
       accountId,
       amount: 300,
       type: "Income",
-      category: "Freelance",
+      category: "Other",
       transactionDate: new Date().toISOString(),
+      merchant: "Freelance Client",
+      paymentMethod: "UPI",
     });
     const txId = createRes.data!._id;
 
@@ -134,9 +142,9 @@ describe("Transactions Integration Tests", () => {
   });
 
   it("should query transactions with filters and pagination", async () => {
-    await createTransactionService(mockUserId, { accountId, amount: 10, type: "Income", category: "Salary", transactionDate: "2026-01-01T00:00:00.000Z" });
-    await createTransactionService(mockUserId, { accountId, amount: 20, type: "Expense", category: "Food", transactionDate: "2026-01-02T00:00:00.000Z" });
-    await createTransactionService(mockUserId, { accountId, amount: 30, type: "Expense", category: "Transport", transactionDate: "2026-01-03T00:00:00.000Z" });
+    await createTransactionService(mockUserId, { accountId, amount: 10, type: "Income", category: "Salary", transactionDate: "2026-01-01T00:00:00.000Z", merchant: "Company Corp", paymentMethod: "Net Banking" });
+    await createTransactionService(mockUserId, { accountId, amount: 20, type: "Expense", category: "Food & Dining", transactionDate: "2026-01-02T00:00:00.000Z", merchant: "Restaurant", paymentMethod: "Cash" });
+    await createTransactionService(mockUserId, { accountId, amount: 30, type: "Expense", category: "Transportation", transactionDate: "2026-01-03T00:00:00.000Z", merchant: "Taxi Cab", paymentMethod: "Cash" });
 
     const getRes = await getTransactionsService(mockUserId, { type: "Expense" });
     expect(getRes.success).toBe(true);

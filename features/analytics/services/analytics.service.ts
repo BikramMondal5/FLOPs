@@ -11,8 +11,10 @@ import {
   aggregateRawCategories,
   aggregateRawMonthly,
   aggregateRawSparkline,
+  fetchRawTrendsTransactions,
 } from "../repositories/analytics.repository";
 import { calculateSparkline } from "../calculators/cashflow.calculator";
+import { calculateTrends } from "../calculators/trends.calculator";
 import { mapRawDashboardToDTO } from "../mappers/financial-summary.mapper";
 import { logger } from "@/lib/logger";
 
@@ -139,6 +141,63 @@ export async function getDashboardAnalyticsService(
     return {
       success: false,
       message: "Failed to compile financial stats overview.",
+    };
+  }
+}
+
+export async function getTrendsAnalyticsService(
+  userId: string,
+  params: {
+    category?: string;
+    accountId?: string;
+    paymentMethod?: string;
+    search?: string;
+    referenceDate?: Date;
+  }
+) {
+  try {
+    const db = await connectDB();
+    const refDate = params.referenceDate ?? new Date();
+
+    // Formulate date boundaries
+    const day = refDate.getDay();
+    const diffToMonday = day === 0 ? -6 : 1 - day;
+    const monday = new Date(refDate);
+    monday.setDate(refDate.getDate() + diffToMonday);
+    monday.setHours(0, 0, 0, 0);
+
+    const firstOfMonth = new Date(refDate.getFullYear(), refDate.getMonth(), 1, 0, 0, 0, 0);
+    const firstOfYear = new Date(refDate.getFullYear(), 0, 1, 0, 0, 0, 0);
+    const startDate = new Date(Math.min(monday.getTime(), firstOfMonth.getTime(), firstOfYear.getTime()));
+
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+    sunday.setHours(23, 59, 59, 999);
+
+    const endOfYear = new Date(refDate.getFullYear(), 11, 31, 23, 59, 59, 999);
+    const endDate = new Date(Math.max(refDate.getTime(), sunday.getTime(), endOfYear.getTime()));
+
+    // Fetch matching transactions
+    const rawTransactions = await fetchRawTrendsTransactions(db, userId, startDate, endDate, {
+      category: params.category,
+      accountId: params.accountId,
+      paymentMethod: params.paymentMethod,
+      search: params.search,
+    });
+
+    // Compute weekly, monthly, and yearly trend datasets
+    const trends = calculateTrends(rawTransactions, refDate);
+
+    return {
+      success: true,
+      message: "Trends analytics retrieved successfully",
+      data: trends,
+    };
+  } catch (error) {
+    logger.error("Failed to build trends analytics summary", error, { userId, params });
+    return {
+      success: false,
+      message: "Failed to compile trends analytics summary.",
     };
   }
 }

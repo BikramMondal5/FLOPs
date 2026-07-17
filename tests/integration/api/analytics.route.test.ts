@@ -41,7 +41,7 @@ describe("API Routes: /api/analytics/dashboard", () => {
 
     const accountRes = await createAccountService(mockSession.user.id, {
       name: "Checking",
-      type: "Checking",
+      type: "Current",
       balance: 1000,
     });
     accountId = accountRes.data!._id;
@@ -54,6 +54,8 @@ describe("API Routes: /api/analytics/dashboard", () => {
       type: "Income",
       category: "Salary",
       transactionDate: new Date().toISOString(),
+      merchant: "Employer",
+      paymentMethod: "Net Banking",
     });
 
     const res = await request(server)

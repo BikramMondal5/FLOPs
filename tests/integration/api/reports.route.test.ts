@@ -41,7 +41,7 @@ describe("API Routes: /api/reports/dashboard", () => {
 
     const accountRes = await createAccountService(mockSession.user.id, {
       name: "Checking",
-      type: "Checking",
+      type: "Current",
       balance: 1000,
     });
     accountId = accountRes.data!._id;
@@ -52,8 +52,10 @@ describe("API Routes: /api/reports/dashboard", () => {
       accountId,
       amount: 50,
       type: "Expense",
-      category: "Food",
+      category: "Food & Dining",
       transactionDate: new Date().toISOString(),
+      merchant: "Restaurant",
+      paymentMethod: "Cash",
     });
 
     const res = await request(server)
@@ -61,6 +63,6 @@ describe("API Routes: /api/reports/dashboard", () => {
       .expect(200);
 
     expect(res.body.success).toBe(true);
-    expect(res.body.data.summary.totalExpenses).toBe(50);
+    expect(res.body.data.summary.totalExpense).toBe(50);
   });
 });

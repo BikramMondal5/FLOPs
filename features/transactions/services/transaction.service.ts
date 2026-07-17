@@ -93,9 +93,9 @@ export async function getTransactionByIdService(
 ): Promise<ApiResponse<TransactionDTO>> {
   try {
     const db = await connectDB();
-    const transaction = await findTransactionByIdWithSession(db, transactionId, userId);
+    const transaction = (await findTransactionByIdWithSession(db, transactionId, userId)) as TransactionDTO | null;
 
-    if (!transaction) {
+    if (!transaction || transaction.isArchived) {
       return {
         success: false,
         message: "Transaction not found or access denied.",

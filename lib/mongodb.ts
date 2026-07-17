@@ -86,13 +86,16 @@ function createMongoClient() {
     });
   }
 
+  const isLocal =
+    process.env.MONGODB_URI.includes("127.0.0.1") ||
+    process.env.MONGODB_URI.includes("localhost");
+
   return new MongoClient(process.env.MONGODB_URI, {
     maxPoolSize: 10,
     serverSelectionTimeoutMS: 8000,
     connectTimeoutMS: 8000,
     family: 4,
-    retryWrites: true,
-    tls: true,
+    ...(isLocal ? {} : { retryWrites: true, tls: true }),
   });
 }
 

@@ -60,7 +60,7 @@ describe("API Routes: /api/goals", () => {
       .send({
         name: "New Laptop",
         targetAmount: 50000,
-        currentAmount: 5000,
+        currentContribution: 5000,
         category: "Electronics",
         targetDate: targetDate.toISOString(),
       })
@@ -78,9 +78,9 @@ describe("API Routes: /api/goals", () => {
     // 3. Update goal
     const patchRes = await request(goalDetailServer)
       .patch(`/api/goals/${goalId}`)
-      .send({ currentAmount: 6000 })
+      .send({ currentContribution: 6000 })
       .expect(200);
-    expect(patchRes.body.data.currentAmount).toBe(6000);
+    expect(patchRes.body.data.currentContribution).toBe(6000);
 
     // 4. Delete goal
     await request(goalDetailServer)

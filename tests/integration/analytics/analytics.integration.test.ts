@@ -25,7 +25,7 @@ describe("Analytics Integration Tests", () => {
     // Setup an account
     const accountRes = await createAccountService(mockUserId, {
       name: "Checking Account",
-      type: "Checking",
+      type: "Current",
       balance: 2000,
     });
     accountId = accountRes.data!._id;
@@ -39,6 +39,8 @@ describe("Analytics Integration Tests", () => {
       type: "Income",
       category: "Salary",
       transactionDate: new Date().toISOString(),
+      merchant: "Employer",
+      paymentMethod: "Net Banking",
     });
 
     // Log expense transaction of 300
@@ -46,8 +48,10 @@ describe("Analytics Integration Tests", () => {
       accountId,
       amount: 300,
       type: "Expense",
-      category: "Food",
+      category: "Food & Dining",
       transactionDate: new Date().toISOString(),
+      merchant: "Restaurant",
+      paymentMethod: "Cash",
     });
 
     const analyticsRes = await getDashboardAnalyticsService(mockUserId, "This Month");
@@ -60,9 +64,9 @@ describe("Analytics Integration Tests", () => {
     expect(summary.netSavings).toBe(1200);
 
     const categories = analyticsRes.data!.categories;
-    const foodCat = categories.find((c) => c.category === "Food");
+    const foodCat = categories.find((c) => c.category === "Food & Dining");
     expect(foodCat).toBeDefined();
-    expect(foodCat?.amount).toBe(300);
+    expect(foodCat?.spent).toBe(300);
   });
 
   it("should serve dashboard analytics from cache and fetch from DB after cache invalidation", async () => {
@@ -73,6 +77,8 @@ describe("Analytics Integration Tests", () => {
       type: "Income",
       category: "Salary",
       transactionDate: new Date().toISOString(),
+      merchant: "Employer",
+      paymentMethod: "Net Banking",
     });
 
     // First fetch
@@ -88,6 +94,8 @@ describe("Analytics Integration Tests", () => {
       amount: 400,
       type: "Income",
       category: "Salary",
+      merchant: "Employer",
+      paymentMethod: "Net Banking",
       isArchived: false,
       transactionDate: new Date(),
       createdAt: new Date(),

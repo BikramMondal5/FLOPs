@@ -86,7 +86,7 @@ describe("API Routes: /api/accounts", () => {
   it("GET, PATCH, DELETE /api/accounts/:id - should get details, update, and archive account", async () => {
     const payload = {
       name: "Checking Wallet",
-      type: "Checking",
+      type: "Current",
       balance: 500,
     };
 

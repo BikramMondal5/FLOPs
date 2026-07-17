@@ -51,17 +51,20 @@ describe("Cross-Engine Integration Workflows", () => {
 
     // 2. Setup budget
     await createBudgetService(mockUserId, {
-      category: "Transport",
-      limit: 200,
-      period: "monthly",
+      name: "Monthly Transport",
+      category: "Transportation",
+      budgetAmount: 200,
+      period: "Monthly",
+      startDate: "2026-07-01T00:00:00.000Z",
+      endDate: "2026-07-31T23:59:59.000Z",
     });
 
     // 3. Setup goal
     await createGoalService(mockUserId, {
       name: "Holiday Trip",
       targetAmount: 50000,
-      currentAmount: 2000,
-      category: "Leisure",
+      currentContribution: 2000,
+      category: "Vacation",
       targetDate: "2029-05-01T00:00:00.000Z",
     });
 
@@ -70,8 +73,10 @@ describe("Cross-Engine Integration Workflows", () => {
       accountId,
       amount: 1500,
       type: "Income",
-      category: "Bonus",
+      category: "Other",
       transactionDate: new Date().toISOString(),
+      merchant: "Bonus Client",
+      paymentMethod: "Net Banking",
     });
     expect(incomeRes.success).toBe(true);
 
@@ -112,16 +117,19 @@ describe("Cross-Engine Integration Workflows", () => {
   it("Workflow 2: Expense Workflow & Budget Alert Triggering", async () => {
     const accountRes = await createAccountService(mockUserId, {
       name: "Checking",
-      type: "Checking",
+      type: "Current",
       balance: 1000,
     });
     const accountId = accountRes.data!._id;
 
     // Create budget
     await createBudgetService(mockUserId, {
-      category: "Food",
-      limit: 100,
-      period: "monthly",
+      name: "Monthly Food",
+      category: "Food & Dining",
+      budgetAmount: 100,
+      period: "Monthly",
+      startDate: "2026-07-01T00:00:00.000Z",
+      endDate: "2026-07-31T23:59:59.000Z",
     });
 
     // Create expense of 110 (exceeds budget)
@@ -129,8 +137,10 @@ describe("Cross-Engine Integration Workflows", () => {
       accountId,
       amount: 110,
       type: "Expense",
-      category: "Food",
+      category: "Food & Dining",
       transactionDate: new Date().toISOString(),
+      merchant: "Restaurant",
+      paymentMethod: "Cash",
     });
 
     // Verify balance debited
@@ -139,12 +149,12 @@ describe("Cross-Engine Integration Workflows", () => {
 
     // Verify budget exceeded status
     const budgetRes = await getBudgetDashboardService(mockUserId);
-    const foodBudget = budgetRes.data?.budgets.find(b => b.category === "Food");
-    expect(foodBudget?.status).toBe("exceeded");
+    const foodBudget = budgetRes.data?.budgets.find(b => b.budget.category === "Food & Dining");
+    expect(foodBudget?.status).toBe("Exceeded");
 
     // Verify notifications compile an exceeded warning
     const notificationsRes = await getNotificationsService(mockUserId);
-    const alert = notificationsRes.data?.find(n => n.title.includes("Budget Exceeded"));
+    const alert = notificationsRes.data?.find(n => n.message.includes("Budget Exceeded"));
     expect(alert).toBeDefined();
     expect(alert?.severity).toBe("critical");
   });
@@ -152,7 +162,7 @@ describe("Cross-Engine Integration Workflows", () => {
   it("Workflow 3: Rollback on Archiving", async () => {
     const accountRes = await createAccountService(mockUserId, {
       name: "Checking",
-      type: "Checking",
+      type: "Current",
       balance: 1000,
     });
     const accountId = accountRes.data!._id;
@@ -164,6 +174,8 @@ describe("Cross-Engine Integration Workflows", () => {
       type: "Expense",
       category: "Entertainment",
       transactionDate: new Date().toISOString(),
+      merchant: "Cinema",
+      paymentMethod: "Cash",
     });
     const txId = expenseRes.data!._id;
 

@@ -54,7 +54,14 @@ describe("API Routes: /api/budgets", () => {
     // 1. Create budget
     const postRes = await request(budgetsServer)
       .post("/api/budgets")
-      .send({ category: "Food", limit: 200, period: "monthly" })
+      .send({
+        name: "Monthly Food",
+        category: "Food & Dining",
+        budgetAmount: 200,
+        period: "Monthly",
+        startDate: "2026-07-01T00:00:00.000Z",
+        endDate: "2026-07-31T23:59:59.000Z",
+      })
       .expect(201);
     expect(postRes.body.success).toBe(true);
     const budgetId = postRes.body.data._id;
@@ -69,9 +76,9 @@ describe("API Routes: /api/budgets", () => {
     // 3. Update budget
     const patchRes = await request(budgetDetailServer)
       .patch(`/api/budgets/${budgetId}`)
-      .send({ limit: 300 })
+      .send({ budgetAmount: 300 })
       .expect(200);
-    expect(patchRes.body.data.limit).toBe(300);
+    expect(patchRes.body.data.budgetAmount).toBe(300);
 
     // 4. Delete budget
     await request(budgetDetailServer)

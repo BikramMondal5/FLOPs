@@ -86,7 +86,7 @@ export default async function AccountsPage() {
             </p>
           </div>
           {session.user.image ? (
-            <Image
+            <img
               src={session.user.image}
               alt={session.user.name ?? "User"}
               width={36}

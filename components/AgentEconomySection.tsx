@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
+import Image from "next/image";
 import { Landmark, Wallet, Receipt, Target, Sparkles, PiggyBank, TrendingUp, BarChart3, ChartSpline } from "lucide-react";
 
 export default function AgentEconomySection() {
@@ -37,6 +38,7 @@ export default function AgentEconomySection() {
 
   return (
     <section
+      id="how-it-works"
       ref={containerRef}
       className="w-full py-20 px-6 sm:px-8 relative overflow-hidden"
       style={{
@@ -284,7 +286,13 @@ export default function AgentEconomySection() {
                 
                 {/* Inner glowing core */}
                 <div className="absolute w-20 h-20 rounded-full bg-radial from-[#FFF4F8] to-[#F9DCE7]/30 flex items-center justify-center">
-                  <Sparkles className="w-9 h-9 text-[#D46A96] animate-[pulse_3s_ease-in-out_infinite]" />
+                  <Image
+                    src="/logo.png"
+                    alt="FLOPs Logo"
+                    width={48}
+                    height={48}
+                    className="h-12 w-12 rounded-full object-contain animate-[pulse_3s_ease-in-out_infinite]"
+                  />
                 </div>
               </div>
 

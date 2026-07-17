@@ -1,19 +1,37 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 // import DigitalBadgesSection from "./DigitalBadgesSection";
 
 const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/features", label: "Features" },
-  { href: "/how-it-works", label: "How It Works" },
-  { href: "/ai-insights", label: "AI Insights" },
-  { href: "/security", label: "Security" },
-  { href: "/dashboard", label: "Dashboard" },
+  { href: "/#home", label: "Home" },
+  { href: "/#features", label: "Features" },
+  { href: "/#how-it-works", label: "How It Works" },
+  { href: "/#testimonials", label: "Testimonials" },
+  { href: "/#faq", label: "FAQ" },
 ];
 
 export default function HeroSection() {
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 10) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <div
+      id="home"
       className="grain-overlay relative min-h-screen flex flex-col overflow-hidden"
       style={{ background: "var(--bg-tint)" }}
     >
@@ -38,91 +56,100 @@ export default function HeroSection() {
 
       {/* Nav */}
       <nav
-        className="relative z-20 mx-auto flex w-full items-center justify-between px-6 xl:px-0"
-        style={{ maxWidth: "1200px", height: "72px" }}
+        className={`fixed top-0 left-0 right-0 w-full z-40 transition-all duration-300 ${
+          isScrolled
+            ? "bg-[#eaf0f2]/80 backdrop-blur-md border-b border-[#F6B7CF]/15 shadow-sm"
+            : "bg-transparent"
+        }`}
+        style={{ height: "72px" }}
       >
-        <Link href="/" className="flex items-center gap-2 no-underline z-10 relative">
-          <Image
-            src="/logo.png"
-            alt="FLOPs logo"
-            width={32}
-            height={32}
-            className="h-8 w-8 rounded-full object-contain"
-            priority
-          />
-          <span
-            className="font-medium"
-            style={{
-              fontFamily: "var(--font-body)",
-              fontSize: "18px",
-              color: "var(--ink)",
-              letterSpacing: "-0.01em",
-            }}
-          >
-            FLOPs
-          </span>
-        </Link>
+        <div
+          className="mx-auto flex w-full h-full items-center justify-between px-6 xl:px-0"
+          style={{ maxWidth: "1200px" }}
+        >
+          <Link href="/" className="flex items-center gap-2 no-underline z-10 relative">
+            <Image
+              src="/logo.png"
+              alt="FLOPs logo"
+              width={32}
+              height={32}
+              className="h-8 w-8 rounded-full object-contain"
+              priority
+            />
+            <span
+              className="font-medium"
+              style={{
+                fontFamily: "var(--font-body)",
+                fontSize: "18px",
+                color: "var(--ink)",
+                letterSpacing: "-0.01em",
+              }}
+            >
+              FLOPs
+            </span>
+          </Link>
 
-        {/* Center Desktop nav */}
-        <div className="absolute inset-0 hidden md:flex items-center justify-center pointer-events-none">
-          <div className="flex items-center gap-8 pointer-events-auto">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="no-underline transition-opacity duration-150"
-                style={{
-                  fontFamily: "var(--font-body)",
-                  fontSize: "15px",
-                  color: "var(--ink)",
-                  opacity: 0.8,
-                }}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        <div className="flex items-center z-10 relative">
-          <div className="flex items-center">
-            {/* Desktop CTA */}
-            <div className="hidden md:flex items-center">
-              <Link
-                href="/plan"
-                className="no-underline cta-lift"
-                style={{
-                  fontFamily: "var(--font-body)",
-                  fontSize: "15px",
-                  fontWeight: 500,
-                  color: "white",
-                  background: "var(--ink)",
-                  borderRadius: "999px",
-                  padding: "10px 24px",
-                  boxShadow: "0 2px 12px rgba(0,0,0,0.15)",
-                }}
-              >
-                Get Started
-              </Link>
+          {/* Center Desktop nav */}
+          <div className="absolute inset-0 hidden md:flex items-center justify-center pointer-events-none">
+            <div className="flex items-center gap-8 pointer-events-auto">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="no-underline transition-opacity duration-150"
+                  style={{
+                    fontFamily: "var(--font-body)",
+                    fontSize: "15px",
+                    color: "var(--ink)",
+                    opacity: 0.8,
+                  }}
+                >
+                  {link.label}
+                </Link>
+              ))}
             </div>
+          </div>
 
-            {/* Mobile hamburger */}
-            <button className="md:hidden flex items-center justify-center p-2 rounded-md ml-4">
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <line x1="3" y1="12" x2="21" y2="12" />
-                <line x1="3" y1="6" x2="21" y2="6" />
-                <line x1="3" y1="18" x2="21" y2="18" />
-              </svg>
-            </button>
+          <div className="flex items-center z-10 relative">
+            <div className="flex items-center">
+              {/* Desktop CTA */}
+              <div className="hidden md:flex items-center">
+                <Link
+                  href="/plan"
+                  className="no-underline cta-lift"
+                  style={{
+                    fontFamily: "var(--font-body)",
+                    fontSize: "15px",
+                    fontWeight: 500,
+                    color: "white",
+                    background: "var(--ink)",
+                    borderRadius: "999px",
+                    padding: "10px 24px",
+                    boxShadow: "0 2px 12px rgba(0,0,0,0.15)",
+                  }}
+                >
+                  Get Started
+                </Link>
+              </div>
+
+              {/* Mobile hamburger */}
+              <button className="md:hidden flex items-center justify-center p-2 rounded-md ml-4">
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="3" y1="12" x2="21" y2="12" />
+                  <line x1="3" y1="6" x2="21" y2="6" />
+                  <line x1="3" y1="18" x2="21" y2="18" />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
       </nav>

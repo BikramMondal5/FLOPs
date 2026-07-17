@@ -30,12 +30,11 @@ import CreateBudgetModal from "@/components/budget/CreateBudgetModal";
 import type { BudgetDashboardDTO, SmartBudgetDetailsDTO } from "@/features/budget/dto/budget-dashboard.dto";
 
 const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/features", label: "Features" },
-  { href: "/how-it-works", label: "How It Works" },
-  { href: "/ai-insights", label: "AI Insights" },
-  { href: "/security", label: "Security" },
-  { href: "/dashboard", label: "Dashboard" },
+  { href: "/#home", label: "Home" },
+  { href: "/#features", label: "Features" },
+  { href: "/#how-it-works", label: "How It Works" },
+  { href: "/#testimonials", label: "Testimonials" },
+  { href: "/#faq", label: "FAQ" },
 ];
 
 interface BudgetClientProps {

@@ -26,6 +26,7 @@ describe("API Route: Auth / Register", () => {
       name: "New User",
       email: "newuser@example.com",
       password: "SecurePassword123!",
+      confirmPassword: "SecurePassword123!",
     };
 
     const res = await request(server)

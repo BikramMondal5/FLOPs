@@ -46,8 +46,8 @@ describe("Goals Integration Tests", () => {
     const goalData = {
       name: "New Car Fund",
       targetAmount: 500000,
-      currentAmount: 10000,
-      category: "Transport",
+      currentContribution: 10000,
+      category: "Vehicle",
       targetDate: "2030-12-31T00:00:00.000Z",
     };
 
@@ -65,10 +65,10 @@ describe("Goals Integration Tests", () => {
 
     // 3. Update
     const updateRes = await updateGoalService(goalId, mockUserId, {
-      currentAmount: 25000,
+      currentContribution: 25000,
     });
     expect(updateRes.success).toBe(true);
-    expect(updateRes.data?.currentAmount).toBe(25000);
+    expect(updateRes.data?.currentContribution).toBe(25000);
 
     // 4. Delete
     const deleteRes = await deleteGoalService(goalId, mockUserId);
@@ -83,8 +83,8 @@ describe("Goals Integration Tests", () => {
     await createGoalService(mockUserId, {
       name: "Emergency Fund",
       targetAmount: 10000,
-      currentAmount: 1000,
-      category: "Savings",
+      currentContribution: 1000,
+      category: "Emergency Fund",
       targetDate: "2028-12-31T00:00:00.000Z",
     });
 
@@ -95,6 +95,8 @@ describe("Goals Integration Tests", () => {
       type: "Income",
       category: "Salary",
       transactionDate: new Date().toISOString(),
+      merchant: "Employer",
+      paymentMethod: "Net Banking",
     });
 
     const dashboardRes = await getGoalsDashboardService(mockUserId);
@@ -103,8 +105,8 @@ describe("Goals Integration Tests", () => {
 
     const goalItem = dashboardRes.data!.goals[0];
     expect(goalItem).toBeDefined();
-    expect(goalItem.name).toBe("Emergency Fund");
+    expect(goalItem.goal.name).toBe("Emergency Fund");
     expect(goalItem.progressPercentage).toBe(10); // 1000 / 10000
-    expect(goalItem.prediction).toBeDefined();
+    expect(goalItem.projectedCompletionDate).toBeDefined();
   });
 });

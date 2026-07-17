@@ -10,7 +10,15 @@
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:integration": "vitest run tests/integration",
-    "test:api": "vitest run tests/integration/api"
+    "test:api": "vitest run tests/integration/api",
+    "test:e2e": "LD_LIBRARY_PATH=/tmp/playwright-libs/all playwright test",
+    "test:e2e:chromium": "LD_LIBRARY_PATH=/tmp/playwright-libs/all playwright test --project=chromium",
+    "test:e2e:firefox": "LD_LIBRARY_PATH=/tmp/playwright-libs/all playwright test --project=firefox",
+    "test:e2e:webkit": "LD_LIBRARY_PATH=/tmp/playwright-libs/all playwright test --project=webkit",
+    "test:e2e:mobile": "LD_LIBRARY_PATH=/tmp/playwright-libs/all playwright test --project=mobile-chrome --project=mobile-safari",
+    "test:e2e:debug": "LD_LIBRARY_PATH=/tmp/playwright-libs/all playwright test --debug",
+    "test:e2e:report": "playwright show-report tests/e2e/reports/html",
+    "test:e2e:visual": "LD_LIBRARY_PATH=/tmp/playwright-libs/all playwright test tests/e2e/responsive/visual-regression.spec.ts"
   },
   "dependencies": {
     "@auth/mongodb-adapter": "^3.11.2",
@@ -34,6 +42,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.1",
     "@tailwindcss/postcss": "^4",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",

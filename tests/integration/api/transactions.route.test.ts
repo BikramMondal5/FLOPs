@@ -52,7 +52,7 @@ describe("API Routes: /api/transactions", () => {
     // Create an account
     const account = await createAccount(db, mockSession.user.id, {
       name: "Checking",
-      type: "Checking",
+      type: "Current",
       balance: 1000,
     });
     accountId = account._id;
@@ -63,8 +63,10 @@ describe("API Routes: /api/transactions", () => {
       accountId,
       amount: 150,
       type: "Expense",
-      category: "Food",
+      category: "Food & Dining",
       transactionDate: new Date().toISOString(),
+      merchant: "Restaurant",
+      paymentMethod: "Cash",
     };
 
     const postRes = await request(txServer)
@@ -93,8 +95,10 @@ describe("API Routes: /api/transactions", () => {
         accountId,
         amount: 200,
         type: "Income",
-        category: "Freelance",
+        category: "Other",
         transactionDate: new Date().toISOString(),
+        merchant: "Freelance Client",
+        paymentMethod: "UPI",
       })
       .expect(201);
     const txId = createRes.body.data._id;

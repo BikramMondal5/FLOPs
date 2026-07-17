@@ -45,7 +45,7 @@ describe("API Routes: /api/notifications", () => {
 
     const accountRes = await createAccountService(mockSession.user.id, {
       name: "Checking",
-      type: "Checking",
+      type: "Current",
       balance: 1000,
     });
     accountId = accountRes.data!._id;
@@ -54,16 +54,21 @@ describe("API Routes: /api/notifications", () => {
   it("should compile and mark notifications read-all", async () => {
     // Create exceeded budget to trigger notification
     await createBudgetService(mockSession.user.id, {
-      category: "Food",
-      limit: 100,
-      period: "monthly",
+      name: "Monthly Food",
+      category: "Food & Dining",
+      budgetAmount: 100,
+      period: "Monthly",
+      startDate: "2026-07-01T00:00:00.000Z",
+      endDate: "2026-07-31T23:59:59.000Z",
     });
     await createTransactionService(mockSession.user.id, {
       accountId,
       amount: 150,
       type: "Expense",
-      category: "Food",
+      category: "Food & Dining",
       transactionDate: new Date().toISOString(),
+      merchant: "Restaurant",
+      paymentMethod: "Cash",
     });
 
     // 1. GET Notifications

@@ -41,7 +41,7 @@ describe("API Routes: /api/export/csv", () => {
 
     const accountRes = await createAccountService(mockSession.user.id, {
       name: "Checking",
-      type: "Checking",
+      type: "Current",
       balance: 1000,
     });
     accountId = accountRes.data!._id;
@@ -52,9 +52,11 @@ describe("API Routes: /api/export/csv", () => {
       accountId,
       amount: 45,
       type: "Expense",
-      category: "Food",
+      category: "Food & Dining",
       transactionDate: new Date().toISOString(),
-      description: "Apples",
+      merchant: "Grocery Store",
+      paymentMethod: "Cash",
+      notes: "Apples",
     });
 
     const res = await request(server)

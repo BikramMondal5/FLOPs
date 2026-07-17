@@ -30,7 +30,7 @@ describe("Notifications Integration Tests", () => {
 
     const accountRes = await createAccountService(mockUserId, {
       name: "Checking",
-      type: "Checking",
+      type: "Current",
       balance: 1000,
     });
     accountId = accountRes.data!._id;
@@ -39,17 +39,22 @@ describe("Notifications Integration Tests", () => {
   it("should compile and sort notifications appropriately based on alerts triggered", async () => {
     // Create an exceeded budget to trigger a warning notification
     await createBudgetService(mockUserId, {
-      category: "Food",
-      limit: 100,
-      period: "monthly",
+      name: "Monthly Food",
+      category: "Food & Dining",
+      budgetAmount: 100,
+      period: "Monthly",
+      startDate: "2026-07-01T00:00:00.000Z",
+      endDate: "2026-07-31T23:59:59.000Z",
     });
 
     await createTransactionService(mockUserId, {
       accountId,
       amount: 150, // exceeds budget
       type: "Expense",
-      category: "Food",
+      category: "Food & Dining",
       transactionDate: new Date().toISOString(),
+      merchant: "Restaurant",
+      paymentMethod: "Cash",
     });
 
     const notifRes = await getNotificationsService(mockUserId);
@@ -57,7 +62,7 @@ describe("Notifications Integration Tests", () => {
     expect(notifRes.data).toBeDefined();
     
     // There should be a notification about the budget status
-    const budgetAlert = notifRes.data?.find((n) => n.title.includes("Budget"));
+    const budgetAlert = notifRes.data?.find((n) => n.message.includes("Budget"));
     expect(budgetAlert).toBeDefined();
     expect(budgetAlert?.isRead).toBe(false);
   });
@@ -65,16 +70,21 @@ describe("Notifications Integration Tests", () => {
   it("should mark all compiled notifications as read upon calling read-all service", async () => {
     // Exceed a budget
     await createBudgetService(mockUserId, {
-      category: "Transport",
-      limit: 50,
-      period: "monthly",
+      name: "Monthly Transport",
+      category: "Transportation",
+      budgetAmount: 50,
+      period: "Monthly",
+      startDate: "2026-07-01T00:00:00.000Z",
+      endDate: "2026-07-31T23:59:59.000Z",
     });
     await createTransactionService(mockUserId, {
       accountId,
       amount: 60,
       type: "Expense",
-      category: "Transport",
+      category: "Transportation",
       transactionDate: new Date().toISOString(),
+      merchant: "Bus Ticket",
+      paymentMethod: "Cash",
     });
 
     let notifRes = await getNotificationsService(mockUserId);

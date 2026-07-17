@@ -4,7 +4,7 @@ import { DottedMapCard } from "./DottedMapCard";
 
 export default function FeatureCards() {
   return (
-    <section className="w-full relative z-10 pt-10 pb-16 px-6 xl:px-0 mx-auto" style={{ maxWidth: "1200px" }}>
+    <section id="features" className="w-full relative z-10 pt-10 pb-16 px-6 xl:px-0 mx-auto" style={{ maxWidth: "1200px" }}>
       <div className="flex flex-col items-center text-center">
         {/* Tag / Pill Badge */}
         <div

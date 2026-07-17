@@ -26,26 +26,28 @@ describe("Reports Integration Tests", () => {
 
     const accountRes = await createAccountService(mockUserId, {
       name: "Checking",
-      type: "Checking",
+      type: "Current",
       balance: 10000,
     });
     accountId = accountRes.data!._id;
   });
 
   it("should compile reports successfully with accurate transaction aggregations", async () => {
-    // Create budget
     await createBudgetService(mockUserId, {
-      category: "Food",
-      limit: 1000,
-      period: "monthly",
+      name: "Monthly Food",
+      category: "Food & Dining",
+      budgetAmount: 1000,
+      period: "Monthly",
+      startDate: "2026-07-01T00:00:00.000Z",
+      endDate: "2026-07-31T23:59:59.000Z",
     });
 
     // Create goal
     await createGoalService(mockUserId, {
-      name: "Vacation",
+      name: "Vacation Fund",
       targetAmount: 20000,
-      currentAmount: 1000,
-      category: "Travel",
+      currentContribution: 1000,
+      category: "Vacation",
       targetDate: "2027-12-31T00:00:00.000Z",
     });
 
@@ -56,14 +58,18 @@ describe("Reports Integration Tests", () => {
       type: "Income",
       category: "Salary",
       transactionDate: new Date().toISOString(),
+      merchant: "Employer",
+      paymentMethod: "Net Banking",
     });
 
     await createTransactionService(mockUserId, {
       accountId,
       amount: 150,
       type: "Expense",
-      category: "Food",
+      category: "Food & Dining",
       transactionDate: new Date().toISOString(),
+      merchant: "Restaurant",
+      paymentMethod: "Cash",
     });
 
     const reportRes = await getReportDashboardService(mockUserId, "Monthly");
@@ -72,16 +78,16 @@ describe("Reports Integration Tests", () => {
 
     const summary = reportRes.data!.summary;
     expect(summary.totalIncome).toBe(4000);
-    expect(summary.totalExpenses).toBe(150);
+    expect(summary.totalExpense).toBe(150);
     expect(summary.netSavings).toBe(3850);
-    expect(reportRes.data!.budgets.length).toBe(1);
-    expect(reportRes.data!.goals.length).toBe(1);
+    expect(reportRes.data!.budgetPerformance.length).toBe(1);
+    expect(reportRes.data!.goalsProgress.length).toBe(1);
   });
 
   it("should return empty summary structure if no records exist", async () => {
     const reportRes = await getReportDashboardService(mockUserId, "Daily");
     expect(reportRes.success).toBe(true);
     expect(reportRes.data?.summary.totalIncome).toBe(0);
-    expect(reportRes.data?.summary.totalExpenses).toBe(0);
+    expect(reportRes.data?.summary.totalExpense).toBe(0);
   });
 });

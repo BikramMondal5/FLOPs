@@ -39,6 +39,17 @@ export default function TransactionsClient({ initialData, accounts }: Transactio
   const [dateTo, setDateTo] = useState("");
   const [showFilters, setShowFilters] = useState(false);
 
+  // Add state to store fetched trend data (weekly, monthly, yearly arrays)
+  const [trendsData, setTrendsData] = useState<{
+    weekly: { name: string; Expense: number }[];
+    monthly: { name: string; Expense: number }[];
+    yearly: { name: string; Expense: number }[];
+  }>({
+    weekly: [],
+    monthly: [],
+    yearly: [],
+  });
+
   // Modals state
   const [createOpen, setCreateOpen] = useState(false);
   const [editTx, setEditTx] = useState<TransactionDTO | null>(null);
@@ -85,22 +96,50 @@ export default function TransactionsClient({ initialData, accounts }: Transactio
     [search, type, category, paymentMethod, accountId, dateFrom, dateTo]
   );
 
+  // Fetch trends from API
+  const fetchTrends = useCallback(
+    async () => {
+      try {
+        const query = new URLSearchParams({
+          search,
+          category,
+          paymentMethod,
+          accountId,
+          dateFrom,
+          dateTo,
+        });
+
+        const res = await fetch(`/api/analytics/trends?${query.toString()}`);
+        const result = await res.json();
+        if (result.success) {
+          setTrendsData(result.data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch trends data:", err);
+      }
+    },
+    [search, category, paymentMethod, accountId, dateFrom, dateTo]
+  );
+
   // Trigger search / filters updates
   useEffect(() => {
     fetchTransactions(1);
-  }, [search, type, category, paymentMethod, accountId, dateFrom, dateTo]);
+    fetchTrends();
+  }, [search, type, category, paymentMethod, accountId, dateFrom, dateTo, fetchTrends]);
 
   // Mutations callbacks
   function handleCreated(newTx: TransactionDTO) {
     setTransactions((prev) => [newTx, ...prev.slice(0, 19)]);
     setPagination((prev) => ({ ...prev, totalCount: prev.totalCount + 1 }));
     fetchTransactions(1);
+    fetchTrends();
   }
 
   function handleUpdated(updated: TransactionDTO) {
     setTransactions((prev) => prev.map((t) => (t._id === updated._id ? updated : t)));
     if (detailTx?._id === updated._id) setDetailTx(updated);
     fetchTransactions(pagination.page);
+    fetchTrends();
   }
 
   function handleArchived(id: string) {
@@ -108,6 +147,7 @@ export default function TransactionsClient({ initialData, accounts }: Transactio
     setPagination((prev) => ({ ...prev, totalCount: prev.totalCount - 1 }));
     if (detailTx?._id === id) setDetailTx(null);
     fetchTransactions(pagination.page);
+    fetchTrends();
   }
 
   function handleClearFilters() {
@@ -156,38 +196,47 @@ export default function TransactionsClient({ initialData, accounts }: Transactio
       color: colors[i % colors.length],
     }));
 
-    // Area Chart: Mock Weekly, Monthly, Yearly based on visual styles but using some real transaction names
-    const weekly = [
-      { name: "Mon", Expense: 1200 },
-      { name: "Tue", Expense: 2800 },
-      { name: "Wed", Expense: 1500 },
-      { name: "Thu", Expense: 4200 },
-      { name: "Fri", Expense: 3800 },
-      { name: "Sat", Expense: 6000 },
-      { name: "Sun", Expense: 2200 },
-    ];
-
-    const monthly = transactions.slice(0, 6).map((t) => ({
-      name: t.merchant.slice(0, 8),
-      Expense: Math.abs(t.amount),
-    }));
-
-    const yearly = [
-      { name: "Jan", Expense: 112000 },
-      { name: "Feb", Expense: 98000 },
-      { name: "Mar", Expense: 124000 },
-      { name: "Apr", Expense: 118000 },
-      { name: "May", Expense: 135000 },
-      { name: "Jun", Expense: 122980 },
-    ];
-
     return {
       doughnut: doughnut.length > 0 ? doughnut : [{ name: "No Expenses", value: 1, color: "#E4E4E7" }],
-      weekly,
-      monthly: monthly.length > 0 ? monthly : [{ name: "N/A", Expense: 0 }],
-      yearly,
+      weekly: trendsData.weekly,
+      monthly: trendsData.monthly.length > 0 ? trendsData.monthly : [{ name: "N/A", Expense: 0 }],
+      yearly: trendsData.yearly,
     };
-  }, [transactions]);
+  }, [transactions, trendsData]);
+
+  const activeChartData = useMemo(() => {
+    if (chartFilter === "Weekly") return chartsData.weekly;
+    if (chartFilter === "Monthly") return chartsData.monthly;
+    return chartsData.yearly;
+  }, [chartFilter, chartsData]);
+
+  const nonZeroCount = useMemo(() => {
+    return activeChartData.filter((d) => d.Expense > 0).length;
+  }, [activeChartData]);
+
+  // Determine line type, stroke, and fill based on nonZeroCount
+  const areaType = nonZeroCount >= 3 ? "monotone" : "linear";
+  const strokeColor = nonZeroCount === 1 ? "transparent" : "#D46A96";
+  const fillColor = nonZeroCount === 1 ? "transparent" : "url(#txGradient)";
+
+  // Render a nice pink marker only on the days/months that actually contain expenses
+  const renderCustomDot = useCallback((props: any) => {
+    const { cx, cy, payload } = props;
+    if (payload && payload.Expense > 0) {
+      return (
+        <circle
+          key={`dot-${payload.name}-${cx}-${cy}`}
+          cx={cx}
+          cy={cy}
+          r={4}
+          fill="#D46A96"
+          stroke="#FFFFFF"
+          strokeWidth={1.5}
+        />
+      );
+    }
+    return null;
+  }, []);
 
   return (
     <>
@@ -314,13 +363,7 @@ export default function TransactionsClient({ initialData, accounts }: Transactio
             <div className="w-full h-full flex-grow">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart
-                  data={
-                    chartFilter === "Weekly"
-                      ? chartsData.weekly
-                      : chartFilter === "Monthly"
-                      ? chartsData.monthly
-                      : chartsData.yearly
-                  }
+                  data={activeChartData}
                   margin={{ top: 5, right: 10, left: -25, bottom: 0 }}
                 >
                   <defs>
@@ -347,12 +390,13 @@ export default function TransactionsClient({ initialData, accounts }: Transactio
                     formatter={(val: any) => [`₹${val.toLocaleString()}`, "Amount"]}
                   />
                   <Area
-                    type="monotone"
+                    type={areaType}
                     dataKey="Expense"
-                    stroke="#D46A96"
+                    stroke={strokeColor}
                     strokeWidth={2}
                     fillOpacity={1}
-                    fill="url(#txGradient)"
+                    fill={fillColor}
+                    dot={renderCustomDot}
                   />
                 </AreaChart>
               </ResponsiveContainer>
