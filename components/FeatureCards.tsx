@@ -76,7 +76,7 @@ export default function FeatureCards() {
           <div className="md:col-span-2 flex flex-col p-8 rounded-3xl bg-white shadow-sm border border-black/5 hover:-translate-y-1 hover:shadow-md transition-all duration-300 min-h-[380px] overflow-hidden justify-between">
             <div className="relative w-full h-56 mb-2 rounded-2xl overflow-hidden">
               <Image
-                src="/card1.png"
+                src="/Card1.png"
                 alt="Unified Financial Dashboard"
                 fill
                 priority={true}
@@ -94,7 +94,7 @@ export default function FeatureCards() {
           <div className="md:col-span-2 flex flex-col p-8 rounded-3xl bg-white shadow-sm border border-black/5 hover:-translate-y-1 hover:shadow-md transition-all duration-300 min-h-[380px] overflow-hidden justify-between">
             <div className="relative w-full h-56 mb-2 rounded-2xl overflow-hidden">
               <Image
-                src="/Card2.png"
+                src="/card2.png"
                 alt="Cross-Device Experience"
                 fill
                 className="object-contain"
