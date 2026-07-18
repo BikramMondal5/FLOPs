@@ -677,7 +677,7 @@ function TestimonialCard({ testimonial }: { testimonial: any }) {
       className="relative group transition-all duration-500 h-full border border-black/5 bg-white shadow-sm hover:shadow-md hover:-translate-y-1 rounded-3xl overflow-hidden backdrop-blur-sm text-left flex flex-col justify-between"
       style={{ minHeight: "280px" }}
     >
-      <div className="absolute top-0 right-0 p-6 text-zinc-100 group-hover:text-[#F6B7CF]/10 transition-colors">
+      <div className="absolute top-0 right-0 p-6 text-zinc-100 group-hover:text-black transition-colors">
         <Quote className="w-12 h-12 rotate-180" />
       </div>
 

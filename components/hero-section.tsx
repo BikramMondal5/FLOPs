@@ -146,7 +146,7 @@ export default function HeroSection() {
               fontSize: "16px",
               color: "var(--ink)",
               backgroundColor: "#F6B7CF",
-              border: "3px dotted #D46A96",
+              border: "2px solid #D46A96",
               padding: "14px 32px",
               boxShadow: "0 4px 16px rgba(246, 183, 207, 0.4)",
             }}
@@ -160,15 +160,10 @@ export default function HeroSection() {
               width="18"
               height="18"
               viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="transition-transform duration-300 ease-in-out group-hover:translate-x-1"
+              fill="currentColor"
+              className="transition-transform duration-200 group-hover:translate-x-1"
             >
-              <line x1="5" y1="12" x2="19" y2="12" />
-              <polyline points="12 5 19 12 12 19" />
+              <path d="M5 12h14m-7-7l7 7-7 7" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
             </svg>
           </Link>
         </div>
