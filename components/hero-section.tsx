@@ -152,7 +152,7 @@ export default function HeroSection() {
             }}
             onClick={(e) => {
               e.preventDefault();
-              window.open("https://drive.google.com/file/d/1ehiPvAAo05FcVeY9zHjZYFR6fGFUw2ki/view?usp=drive_link", "_blank");
+              window.open("https://drive.google.com/file/d/19kOgPG5z3p8pzY_DOgrKQsx8J1STNUZP/view?usp=sharing", "_blank");
             }}
           >
             Watch Demo
