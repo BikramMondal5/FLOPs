@@ -3,8 +3,6 @@
 ![Preview Image](public/hero-section.png)
 **FLOPs** is an AI-powered personal finance management platform that helps users take control of their financial lives through intelligent budgeting, expense tracking, financial analytics, AI-driven insights, and goal planning.
 
----
-
 # 🌟 Overview
 Built with a modern full-stack architecture, FLOPs combines intuitive financial management tools with AI to provide personalized recommendations, automated reports, and actionable financial insights—all in one unified platform.
 
@@ -23,7 +21,7 @@ Managing personal finances can quickly become overwhelming. Users often struggle
 
 Most traditional finance trackers only record transactions—they don't help users make smarter financial decisions.
 
-# ✨ Our Solution
+# ✨ The Solution
 
 FLOPs combines financial management with AI to create a complete personal finance platform.
 
@@ -343,8 +341,6 @@ flops/
 ├── tsconfig.json                # TypeScript configuration
 └── vitest.config.ts             # Vitest configuration
 ```
-
----
 
 # 🚀 Installation
 
