@@ -33,8 +33,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       style={{
         backgroundColor: "#FCFCFD",
         backgroundImage: `
-          linear-gradient(to right, rgba(246, 183, 207, 0.04) 1px, transparent 1px),
-          linear-gradient(to bottom, rgba(246, 183, 207, 0.04) 1px, transparent 1px)
+          linear-gradient(to right, rgba(246, 183, 207, 0.25) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(246, 183, 207, 0.25) 1px, transparent 1px)
         `,
         backgroundSize: "32px 32px",
         // @ts-ignore
@@ -49,8 +49,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           className="absolute inset-0 pointer-events-none z-[1] transition-opacity duration-300"
           style={{
             backgroundImage: `
-              linear-gradient(to right, rgba(246, 183, 207, 0.1) 1px, transparent 1px),
-              linear-gradient(to bottom, rgba(246, 183, 207, 0.1) 1px, transparent 1px)
+              linear-gradient(to right, rgba(246, 183, 207, 0.4) 1px, transparent 1px),
+              linear-gradient(to bottom, rgba(246, 183, 207, 0.4) 1px, transparent 1px)
             `,
             backgroundSize: "32px 32px",
             WebkitMaskImage: "radial-gradient(circle 240px at var(--cx) var(--cy), #000 0%, #000 40%, transparent 100%)",
@@ -71,7 +71,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           initial={{ opacity: 0, x: -30 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="hidden md:flex md:w-[45%] lg:w-[40%] bg-white/40 border-r border-[#F6B7CF]/10 flex-col justify-center items-center text-center p-8 lg:p-12 shrink-0 relative overflow-hidden"
+          className="hidden md:flex md:w-[45%] lg:w-[40%] bg-white border-r border-slate-800/20 flex-col justify-center items-center text-center p-8 lg:p-12 shrink-0 relative overflow-hidden"
         >
           {/* Subtle design helper */}
           <div className="absolute top-[-50px] left-[-50px] w-48 h-48 rounded-full bg-[#F6B7CF]/10 blur-3xl pointer-events-none" />
