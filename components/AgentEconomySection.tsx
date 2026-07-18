@@ -289,9 +289,9 @@ export default function AgentEconomySection() {
                   <Image
                     src="/logo.png"
                     alt="FLOPs Logo"
-                    width={48}
-                    height={48}
-                    className="h-12 w-12 rounded-full object-contain animate-[pulse_3s_ease-in-out_infinite]"
+                    width={90}
+                    height={90}
+                    className="rounded-full object-contain"
                   />
                 </div>
               </div>
