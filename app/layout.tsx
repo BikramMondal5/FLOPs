@@ -20,9 +20,14 @@ const instrumentSerif = Instrument_Serif({
 });
 
 export const metadata: Metadata = {
-  title: "FLOPs — Master your money. Not your stress.",
+  title: "FLOPs: Master Your Money",
   description:
     "FLOPs transforms your financial data into personalized insights, smarter budgets, and AI-powered recommendations.",
+  icons: {
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
 };
 
 export default function RootLayout({

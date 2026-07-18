@@ -138,6 +138,8 @@ export default function HeroSection() {
 
           <Link
             href="/patterns"
+            target="_blank"
+            rel="noopener noreferrer"
             className="group flex items-center justify-center gap-2 no-underline rounded-full font-semibold transition-all duration-300 ease-in-out hover:-translate-y-0.5"
             style={{
               fontFamily: "var(--font-body)",
@@ -147,6 +149,10 @@ export default function HeroSection() {
               border: "3px dotted #D46A96",
               padding: "14px 32px",
               boxShadow: "0 4px 16px rgba(246, 183, 207, 0.4)",
+            }}
+            onClick={(e) => {
+              e.preventDefault();
+              window.open("https://drive.google.com/file/d/1ehiPvAAo05FcVeY9zHjZYFR6fGFUw2ki/view?usp=drive_link", "_blank");
             }}
           >
             Watch Demo

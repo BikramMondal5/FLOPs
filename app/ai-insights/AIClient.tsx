@@ -2,6 +2,8 @@
 
 import { useState, useRef } from "react";
 import { motion } from "framer-motion";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import Navbar from "@/components/common/Navbar";
 import {
   Menu,
@@ -231,7 +233,51 @@ export default function AIClient({ initialData, userName, userEmail, userImage }
                         : "bg-[#FFF4F8] border border-[#F6B7CF]/10 text-zinc-700 self-start rounded-tl-none"
                     }`}
                   >
-                    {msg.content}
+                    {msg.role === "assistant" ? (
+                      <div className="markdown-content prose prose-sm max-w-none">
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm]}
+                          components={{
+                            // Headings
+                            h1: ({ node, ...props }) => <h1 className="text-xl font-bold text-zinc-800 mb-3 mt-4" {...props} />,
+                            h2: ({ node, ...props }) => <h2 className="text-lg font-bold text-zinc-800 mb-2 mt-3" {...props} />,
+                            h3: ({ node, ...props }) => <h3 className="text-base font-semibold text-zinc-700 mb-2 mt-2" {...props} />,
+                            // Paragraphs
+                            p: ({ node, ...props }) => <p className="mb-2 leading-relaxed" {...props} />,
+                            // Lists
+                            ul: ({ node, ...props }) => <ul className="list-disc list-inside mb-2 space-y-1" {...props} />,
+                            ol: ({ node, ...props }) => <ol className="list-decimal list-inside mb-2 space-y-1" {...props} />,
+                            li: ({ node, ...props }) => <li className="ml-2" {...props} />,
+                            // Code
+                            code: ({ node, inline, ...props }: any) => 
+                              inline ? (
+                                <code className="bg-[#F6B7CF]/20 text-[#D46A96] px-1.5 py-0.5 rounded text-xs font-mono" {...props} />
+                              ) : (
+                                <code className="block bg-zinc-800 text-zinc-100 p-3 rounded-lg text-xs font-mono overflow-x-auto my-2" {...props} />
+                              ),
+                            // Links
+                            a: ({ node, ...props }) => <a className="text-[#D46A96] underline hover:text-[#B85578]" {...props} />,
+                            // Blockquote
+                            blockquote: ({ node, ...props }) => <blockquote className="border-l-4 border-[#F6B7CF] pl-4 italic text-zinc-600 my-2" {...props} />,
+                            // Strong/Bold
+                            strong: ({ node, ...props }) => <strong className="font-bold text-zinc-800" {...props} />,
+                            // Em/Italic
+                            em: ({ node, ...props }) => <em className="italic" {...props} />,
+                            // Tables
+                            table: ({ node, ...props }) => <table className="w-full border-collapse my-2 text-xs" {...props} />,
+                            thead: ({ node, ...props }) => <thead className="bg-[#FFF4F8]" {...props} />,
+                            th: ({ node, ...props }) => <th className="border border-[#F6B7CF]/20 px-2 py-1 text-left font-semibold" {...props} />,
+                            td: ({ node, ...props }) => <td className="border border-[#F6B7CF]/20 px-2 py-1" {...props} />,
+                            // Horizontal Rule
+                            hr: ({ node, ...props }) => <hr className="my-3 border-t border-[#F6B7CF]/30" {...props} />,
+                          }}
+                        >
+                          {msg.content}
+                        </ReactMarkdown>
+                      </div>
+                    ) : (
+                      msg.content
+                    )}
                   </div>
                 ))}
                 {loading && (

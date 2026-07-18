@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Send, Plus, PieChart, Target, FileText } from "lucide-react";
+import { Plus, PieChart, Target, FileText } from "lucide-react";
 import Link from "next/link";
 
 interface QuickActionsProps {
@@ -10,13 +10,6 @@ interface QuickActionsProps {
 
 export default function QuickActions({ onAddTransaction }: QuickActionsProps) {
   const actions = [
-    {
-      name: "Transfer Money",
-      icon: Send,
-      color: "#FFF4F8",
-      href: "/transactions",
-      onClick: undefined,
-    },
     {
       name: "Add Transaction",
       icon: Plus,

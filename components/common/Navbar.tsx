@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Bell } from "lucide-react";
@@ -28,6 +30,16 @@ export default function Navbar({ userInfo, ctaText = "Get Started", ctaHref = "/
   const [isScrolled, setIsScrolled] = useState(false);
   const [isNotificationDrawerOpen, setIsNotificationDrawerOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  const handleGetStarted = () => {
+    if (status === "authenticated") {
+      router.push("/overview");
+    } else {
+      router.push("/auth/login");
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -68,8 +80,8 @@ export default function Navbar({ userInfo, ctaText = "Get Started", ctaHref = "/
     <nav
       className={`fixed top-0 left-0 right-0 w-full z-40 transition-all duration-300 ${
         isScrolled
-          ? "bg-[#FCFCFD]/80 backdrop-blur-md border-b border-[#F6B7CF]/15 shadow-sm"
-          : "bg-[#FCFCFD]/60 backdrop-blur-sm"
+          ? "bg-white/70 backdrop-blur-md border-b border-[#F6B7CF]/15 shadow-sm"
+          : "bg-transparent"
       }`}
       style={{ height: "72px" }}
     >
@@ -159,19 +171,20 @@ export default function Navbar({ userInfo, ctaText = "Get Started", ctaHref = "/
               )}
             </>
           ) : (
-            <Link
-              href={ctaHref}
-              className="no-underline text-[15px] font-medium text-white"
+            <button
+              onClick={handleGetStarted}
+              className="no-underline text-[15px] font-medium text-white cursor-pointer"
               style={{
                 fontFamily: "var(--font-body)",
                 background: "#18181B",
                 borderRadius: "999px",
                 padding: "10px 24px",
                 boxShadow: "0 2px 12px rgba(0,0,0,0.15)",
+                border: "none",
               }}
             >
               {ctaText}
-            </Link>
+            </button>
           )}
         </div>
       </div>

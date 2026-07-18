@@ -296,6 +296,7 @@ export default function CtaSection() {
               </svg>
             </button>
             <button
+              onClick={() => window.open("https://drive.google.com/file/d/1ehiPvAAo05FcVeY9zHjZYFR6fGFUw2ki/view?usp=drive_link", "_blank")}
               className="inline-flex items-center justify-center h-14 px-8 rounded-full bg-[#F6B7CF] text-[#18181B] hover:bg-[#F3A9C5] font-semibold text-base transition-all duration-300 border border-[#E88AB3]/35 hover:-translate-y-0.5 hover:shadow-[0_12px_36px_rgba(232,138,179,0.35)] cursor-pointer"
               style={{ fontFamily: "var(--font-body)" }}
             >
