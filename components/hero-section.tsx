@@ -136,10 +136,10 @@ export default function HeroSection() {
             Get Started
           </button>
 
-          <Link
-            href="/patterns"
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            onClick={() => {
+              window.open("https://drive.google.com/file/d/19kOgPG5z3p8pzY_DOgrKQsx8J1STNUZP/view?usp=sharing", "_blank");
+            }}
             className="group flex items-center justify-center gap-2 no-underline rounded-full font-semibold transition-all duration-300 ease-in-out hover:-translate-y-0.5"
             style={{
               fontFamily: "var(--font-body)",
@@ -149,10 +149,7 @@ export default function HeroSection() {
               border: "2px solid #D46A96",
               padding: "14px 32px",
               boxShadow: "0 4px 16px rgba(246, 183, 207, 0.4)",
-            }}
-            onClick={(e) => {
-              e.preventDefault();
-              window.open("https://drive.google.com/file/d/19kOgPG5z3p8pzY_DOgrKQsx8J1STNUZP/view?usp=sharing", "_blank");
+              cursor: "pointer",
             }}
           >
             Watch Demo
@@ -165,7 +162,7 @@ export default function HeroSection() {
             >
               <path d="M5 12h14m-7-7l7 7-7 7" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
             </svg>
-          </Link>
+          </button>
         </div>
       </section>
 
